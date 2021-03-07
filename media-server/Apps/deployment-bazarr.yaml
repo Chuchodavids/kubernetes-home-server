@@ -2,23 +2,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name:  sonarr
+  name:  bazarr
   namespace: media-server
   labels:
-    app:  sonarr
+    app:  bazarr
 spec:
   selector:
     matchLabels:
-      app: sonarr
+      app: bazarr
   replicas: 1
   template:
     metadata:
       labels:
-        app:  sonarr
+        app:  bazarr
     spec:
       containers:
-      - name:  sonarr
-        image: ghcr.io/linuxserver/sonarr
+      - name:  bazarr
+        image: ghcr.io/linuxserver/bazarr
         imagePullPolicy: IfNotPresent
         securityContext:
           runAsUser: 1001
@@ -27,8 +27,8 @@ spec:
             cpu: 100m
             memory: 100Mi
           limits:
-            cpu: 1000m #1000m=1core
-            memory: 1Gi
+            cpu: 300m
+            memory: 256Mi
         #livenessProbe:
           #httpGet:
             #path: /settings
@@ -60,41 +60,24 @@ spec:
         volumeMounts:
         - name: pv-shows
           mountPath: /data/shows
+        - name: pv-movies
+          mountPath: /data/movies
         - name: nfs-appdata
           mountPath: /config
-        - name: pv-downloads
-          mountPath: /data/downloads
       volumes:
-        - name: pv-downloads
+        - name: pv-movies
           persistentVolumeClaim:
-            claimName: pvc-downloads
+            claimName: pvc-movies
         - name: pv-shows
           persistentVolumeClaim:
             claimName: pvc-shows
         - name: nfs-appdata
           persistentVolumeClaim:
-            claimName: claim-appdata-sonarr
+            claimName: claim-appdata-bazarr
       restartPolicy: Always
 
 ---
-# Downloads
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-downloads
-  namespace: media-server
-spec:
-  accessModes:
-    - ReadWriteMany 
-  storageClassName: ""
-  volumeName: pv-downloads
-  resources:
-    requests:
-      storage: 10Mi   
 
----
-
-#Shows
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -109,6 +92,23 @@ spec:
     requests:
       storage: 10Mi   
 
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-movies
+  namespace: media-server
+spec:
+  accessModes:
+    - ReadWriteMany 
+  storageClassName: ""
+  volumeName: pv-movies
+  resources:
+    requests:
+      storage: 10Mi   
+
 ---
 
 #appdata
@@ -116,12 +116,12 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: claim-appdata-sonarr
+  name: claim-appdata-bazarr
   namespace: media-server
   labels:
-    app: sonarr
+    app: bazarr
   annotations:
-    nfs.io/storage-path: "sonarr"
+    nfs.io/storage-path: "bazarr"
 spec:
   storageClassName: nfs-appdata
   accessModes:
@@ -133,20 +133,20 @@ spec:
 
 ---
 
-#Loadbalancer Service
+#Service
 
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: sonarr
+  name: bazarr
   namespace: media-server
 spec:
   selector:
-    app: sonarr
+    app: bazarr
   type: LoadBalancer
   ports:
-  - name: sonarr
-    port: 7878
-    targetPort: 7878
+  - name: bazarr
+    port: 6767
+    targetPort: 6767
     protocol: TCP

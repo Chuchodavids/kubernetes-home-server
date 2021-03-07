@@ -2,36 +2,36 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name:  sonarr
+  name:  hydra2
   namespace: media-server
   labels:
-    app:  sonarr
+    app:  hydra2
 spec:
   selector:
     matchLabels:
-      app: sonarr
+      app: hydra2
   replicas: 1
   template:
     metadata:
       labels:
-        app:  sonarr
+        app:  hydra2
     spec:
       containers:
-      - name:  sonarr
-        image: ghcr.io/linuxserver/sonarr
-        imagePullPolicy: IfNotPresent
+      - name:  hydra2
         securityContext:
           runAsUser: 1001
+        image: ghcr.io/linuxserver/nzbhydra2
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
             cpu: 100m
             memory: 100Mi
           limits:
-            cpu: 1000m #1000m=1core
-            memory: 1Gi
+            cpu: 200m
+            memory: 256Mi
         #livenessProbe:
           #httpGet:
-            #path: /settings
+            #path: /
             #port: 7878
           #initialDelaySeconds: 30
           #timeoutSeconds: 5
@@ -58,26 +58,22 @@ spec:
         - containerPort:  7878
           name:  http
         volumeMounts:
-        - name: pv-shows
-          mountPath: /data/shows
-        - name: nfs-appdata
-          mountPath: /config
         - name: pv-downloads
           mountPath: /data/downloads
+        - name: nfs-appdata
+          mountPath: /config
       volumes:
         - name: pv-downloads
           persistentVolumeClaim:
             claimName: pvc-downloads
-        - name: pv-shows
-          persistentVolumeClaim:
-            claimName: pvc-shows
         - name: nfs-appdata
           persistentVolumeClaim:
-            claimName: claim-appdata-sonarr
+            claimName: claim-appdata-hydra2
       restartPolicy: Always
 
 ---
-# Downloads
+#downloads
+
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -92,22 +88,6 @@ spec:
     requests:
       storage: 10Mi   
 
----
-
-#Shows
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-shows
-  namespace: media-server
-spec:
-  accessModes:
-    - ReadWriteMany 
-  storageClassName: ""
-  volumeName: pv-shows
-  resources:
-    requests:
-      storage: 10Mi   
 
 ---
 
@@ -116,12 +96,12 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: claim-appdata-sonarr
+  name: claim-appdata-hydra2
   namespace: media-server
   labels:
-    app: sonarr
+    app: hydra2
   annotations:
-    nfs.io/storage-path: "sonarr"
+    nfs.io/storage-path: "hydra2"
 spec:
   storageClassName: nfs-appdata
   accessModes:
@@ -133,20 +113,19 @@ spec:
 
 ---
 
-#Loadbalancer Service
-
+#Service
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: sonarr
+  name: hydra2
   namespace: media-server
 spec:
   selector:
-    app: sonarr
+    app: hydra2
   type: LoadBalancer
   ports:
-  - name: sonarr
-    port: 7878
-    targetPort: 7878
+  - name: hydra2
+    port: 5076
+    targetPort: 5076
     protocol: TCP
