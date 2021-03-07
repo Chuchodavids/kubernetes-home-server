@@ -2,27 +2,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name:  radarr
+  name:  sonarr
   namespace: media-server
   labels:
-    app:  radarr
+    app:  sonarr
 spec:
   selector:
     matchLabels:
-      app: radarr
+      app: sonarr
   replicas: 1
   template:
     metadata:
       labels:
-        app:  radarr
+        app:  sonarr
     spec:
       # initContainers:
         # Init containers are exactly like regular containers, except:
           # - Init containers always run to completion.
           # - Each init container must complete successfully before the next one starts.
       containers:
-      - name:  radarr
-        image: ghcr.io/linuxserver/radarr
+      - name:  sonarr
+        image: ghcr.io/linuxserver/sonarr
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -60,22 +60,22 @@ spec:
         - containerPort:  7878
           name:  http
         volumeMounts:
-        - name: pv-downloads
-          mountPath: /data/downloads
-        - name: pv-movies
-          mountPath: /data/movies
+        - name: pv-shows
+          mountPath: /data/shows
         - name: nfs-appdata
           mountPath: /config
+        - name: pv-downloads
+          mountPath: /data/downloads
       volumes:
-        - name: pv-movies
-          persistentVolumeClaim:
-            claimName: pvc-movies
         - name: pv-downloads
           persistentVolumeClaim:
             claimName: pvc-downloads
+        - name: pv-shows
+          persistentVolumeClaim:
+            claimName: pvc-shows
         - name: nfs-appdata
           persistentVolumeClaim:
-            claimName: claim-appdata-radarr
+            claimName: claim-appdata-sonarr
       restartPolicy: Always
 
 ---
@@ -94,19 +94,19 @@ spec:
     requests:
       storage: 10Mi   
 
-
 ---
+
 
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-movies
+  name: pvc-shows
   namespace: media-server
 spec:
   accessModes:
     - ReadWriteMany 
   storageClassName: ""
-  volumeName: pv-movies
+  volumeName: pv-shows
   resources:
     requests:
       storage: 10Mi   
@@ -118,12 +118,12 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: claim-appdata-radarr
+  name: claim-appdata-sonarr
   namespace: media-server
   labels:
-    app: radarr
+    app: sonarr
   annotations:
-    nfs.io/storage-path: "radarr"
+    nfs.io/storage-path: "sonarr"
 spec:
   storageClassName: nfs-appdata
   accessModes:
@@ -141,14 +141,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: radarr
+  name: sonarr
   namespace: media-server
 spec:
   selector:
-    app: radarr
+    app: sonarr
   type: LoadBalancer
   ports:
-  - name: radarr
+  - name: sonarr
     port: 7878
     targetPort: 7878
     protocol: TCP

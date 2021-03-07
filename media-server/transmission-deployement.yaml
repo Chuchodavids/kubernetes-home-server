@@ -28,9 +28,15 @@ spec:
         persistentVolumeClaim:
           claimName: pvc-transmission-downloads
       containers:
+      - name: transmission
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 1024m
+            memory: 1Gi
         image: ghcr.io/linuxserver/transmission
-      - name: transmissj klf
-      jsakldjfsakkuuuion
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9091
