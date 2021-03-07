@@ -2,10 +2,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name:  hydra2
+  name: hydra2
   namespace: media-server
   labels:
-    app:  hydra2
+    app: hydra2
 spec:
   selector:
     matchLabels:
@@ -14,12 +14,12 @@ spec:
   template:
     metadata:
       labels:
-        app:  hydra2
+        app: hydra2
     spec:
       containers:
-      - name:  hydra2
-        securityContext:
-          runAsUser: 1001
+      - name: hydra2
+        #securityContext:
+          #runAsUser: 1001
         image: ghcr.io/linuxserver/nzbhydra2
         imagePullPolicy: IfNotPresent
         resources:

@@ -2,10 +2,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name:  sonarr
+  name: sonarr
   namespace: media-server
   labels:
-    app:  sonarr
+    app: sonarr
 spec:
   selector:
     matchLabels:
@@ -14,14 +14,14 @@ spec:
   template:
     metadata:
       labels:
-        app:  sonarr
+        app: sonarr
     spec:
       containers:
-      - name:  sonarr
+      - name: sonarr
         image: ghcr.io/linuxserver/sonarr
         imagePullPolicy: IfNotPresent
-        securityContext:
-          runAsUser: 1001
+        #securityContext:
+          #runAsUser: 1001
         resources:
           requests:
             cpu: 100m

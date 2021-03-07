@@ -2,10 +2,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name:  radarr
+  name: radarr
   namespace: media-server
   labels:
-    app:  radarr
+    app: radarr
 spec:
   selector:
     matchLabels:
@@ -14,14 +14,14 @@ spec:
   template:
     metadata:
       labels:
-        app:  radarr
+        app: radarr
     spec:
       containers:
-      - name:  radarr
+      - name: radarr
         image: ghcr.io/linuxserver/radarr
         imagePullPolicy: IfNotPresent
-        securityContext:
-          runAsUser: 1001
+        #securityContext:
+          #runAsUser: 1001
         resources:
           requests:
             cpu: 100m
