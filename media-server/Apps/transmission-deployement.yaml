@@ -28,8 +28,9 @@ spec:
         persistentVolumeClaim:
           claimName: pvc-transmission-downloads
       containers:
-      - name: transmission
         image: ghcr.io/linuxserver/transmission
+      - name: transmissj klf
+      jsakldjfsakkuuuion
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9091

@@ -22,37 +22,39 @@ spec:
       containers:
       - name:  radarr
         image: ghcr.io/linuxserver/radarr
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
             cpu: 100m
             memory: 100Mi
           limits:
-            cpu: 100m
-            memory: 100Mi
-        livenessProbe:
-          tcpSocket:
-            port: 80
-          initialDelaySeconds: 5
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /_status/healthz
-            port: 80
-          initialDelaySeconds: 5
-          timeoutSeconds: 2
-          successThreshold: 1
-          failureThreshold: 3
-          periodSeconds: 10
-        env:
+            cpu: 1024m
+            memory: 1Gi
+        #livenessProbe:
+          #httpGet:
+            #path: /settings
+            #port: 7878
+          #initialDelaySeconds: 30
+          #timeoutSeconds: 5
+          #successThreshold: 1
+          #failureThreshold: 3
+          #periodSeconds: 10
+        #readinessProbe:
+          #httpGet:
+            #path: /_status/healthz
+            #port: 80
+          #initialDelaySeconds: 5
+          #timeoutSeconds: 2
+          #successThreshold: 1
+          #failureThreshold: 3
+          #periodSeconds: 10
+        env:      
         - name: PUID
-          key: 1000
+          value: "10050"
         - name: PGID
-          key: 1000
+          value: "10050"
         - name: TZ
-          key: America/Chicago
+          value: America/Chicago
         ports:
         - containerPort:  7878
           name:  http
@@ -67,6 +69,44 @@ spec:
             claimName: claim-downloads
         - name: nfs-appdata
           persistentVolumeClaim:
-            claimName: claim-appdata
+            claimName: claim-appdata-radarr
 
       restartPolicy: Always
+
+
+---
+
+#appdata
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: claim-appdata-radarr
+  namespace: media-server
+  labels:
+    app: radarr
+  annotations:
+    nfs.io/storage-path: "radarr"
+spec:
+  storageClassName: nfs-appdata
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 256Mi
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: radarr
+  namespace: media-server
+spec:
+  selector:
+    app: radarr
+  type: LoadBalancer
+  ports:
+  - name: radarr
+    port: 7878
+    targetPort: 7878
+    protocol: TCP
