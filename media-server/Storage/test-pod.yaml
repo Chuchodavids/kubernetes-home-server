@@ -11,31 +11,17 @@ spec:
       - "/bin/sh"
     args:
       - "-c"
-      - "touch /mnt/SUCCESS && exit 0 || exit 1"
+      - "touch /downloads/SUCCESS && touch /appdata/success"
     volumeMounts:
-      - name: nfs-pvc
-        mountPath: "/mnt"
+      - name: nfs-downloads
+        mountPath: "/downloads"
+      - name: nfs-appdata
+        mountPath: /appdata
   restartPolicy: "Never"
   volumes:
-    - name: nfs-pvc
+    - name: nfs-downloads
       persistentVolumeClaim:
-        claimName: test-claim
-
-
----
-
-
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: test-claim
-  namespace: media-server
-  annotations:
-    foldername: testing
-spec:
-  storageClassName: nfs-downloads
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 1Mi
+        claimName: claim-downloads
+    - name: nfs-appdata
+      persistentVolumeClaim:
+        claimName: claim-appdata

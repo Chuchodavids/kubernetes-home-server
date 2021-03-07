@@ -1,0 +1,29 @@
+#downloads
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: claim-downloads
+  namespace: media-server
+spec:
+  storageClassName: nfs-downloads
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Mi
+
+
+---
+#appdata
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: claim-appdata
+  namespace: media-server
+spec:
+  storageClassName: nfs-appdata
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 256Mi
