@@ -24,20 +24,20 @@ spec:
           #runAsUser: 1001
         resources:
           requests:
-            cpu: 100m
+            cpu: 200m
             memory: 100Mi
           limits:
             cpu: 300m
             memory: 256Mi
-        #livenessProbe:
-          #httpGet:
-            #path: /settings
-            #port: 7878
-          #initialDelaySeconds: 30
-          #timeoutSeconds: 5
-          #successThreshold: 1
-          #failureThreshold: 3
-          #periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 6767
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 60
         #readinessProbe:
           #httpGet:
             #path: /_status/healthz
