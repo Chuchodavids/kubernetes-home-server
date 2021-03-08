@@ -2,40 +2,39 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: radarr
+  name: jellyfin
   namespace: media-server
   labels:
-    app: radarr
+    app: jellyfin
 spec:
   selector:
     matchLabels:
-      app: radarr
+      app: jellyfin
   replicas: 1
   template:
     metadata:
       labels:
-        app: radarr
+        app: jellyfin
     spec:
       containers:
-      - name: radarr
-        image: ghcr.io/linuxserver/radarr
+      - name:  jellyfin
+        image: ich777/jellyfin
         imagePullPolicy: IfNotPresent
         #securityContext:
           #runAsUser: 1001
         resources:
           requests:
-            cpu: 300m
-            memory: 100Mi
-          limits:
             cpu: 1000m
-            memory: 1Gi
+            memory: 4000Mi
+          limits:
+            cpu: 2000m
+            memory: 6Gi
         livenessProbe:
           httpGet:
-            scheme: HTTP
             path: /
-            port: 7878
-          initialDelaySeconds: 30
-          timeoutSeconds: 15
+            port: 32400
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 3
           periodSeconds: 60
@@ -48,55 +47,93 @@ spec:
           #successThreshold: 1
           #failureThreshold: 3
           #periodSeconds: 10
-        env:      
-        - name: PUID
-          value: "10050"
-        - name: PGID
-          value: "10050"
-        - name: TZ
-          value: America/Chicago
         ports:
-        - containerPort:  7878
-          name:  http
+        - containerPort: 8096
+          name: http
         volumeMounts:
-        - name: pv-downloads
-          mountPath: /data/downloads
+        - name: pv-shows
+          mountPath: /data/shows
         - name: pv-movies
           mountPath: /data/movies
         - name: nfs-appdata
           mountPath: /config
+        - name: pv-nvidia
+          mountPath: /dev/dri
       volumes:
         - name: pv-movies
           persistentVolumeClaim:
             claimName: pvc-movies
-        - name: pv-downloads
+        - name: pv-nvidia
           persistentVolumeClaim:
-            claimName: pvc-downloads
+            claimName: pvc-nvidia
+        - name: pv-shows
+          persistentVolumeClaim:
+            claimName: pvc-shows
         - name: nfs-appdata
           persistentVolumeClaim:
-            claimName: claim-appdata-radarr
+            claimName: claim-appdata-jellyfin
       restartPolicy: Always
-
 ---
-
-#downloads
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-downloads
+  name: pvc-nvidia
+  namespace: media-server
+  labels:
+    app: pv-nvidia
+spec:
+  storageClassName: ""
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-nvidia
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteMany
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage
+  local:
+    path: /dev/dri
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - node1
+          - node2
+---
+#shows
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-shows
   namespace: media-server
 spec:
   accessModes:
     - ReadWriteMany 
   storageClassName: ""
-  volumeName: pv-downloads
+  volumeName: pv-shows
   resources:
     requests:
       storage: 10Mi   
 
 
 ---
-
+# Movies
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -118,12 +155,12 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: claim-appdata-radarr
+  name: claim-appdata-jellyfin
   namespace: media-server
   labels:
-    app: radarr
+    app: jellyfin
   annotations:
-    nfs.io/storage-path: "radarr"
+    nfs.io/storage-path: "jellyfin"
 spec:
   storageClassName: nfs-appdata
   accessModes:
@@ -141,14 +178,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: radarr
+  name: jellyfin
   namespace: media-server
 spec:
   selector:
-    app: radarr
+    app: jellyfin
   type: LoadBalancer
   ports:
-  - name: radarr
-    port: 7878
-    targetPort: 7878
+  - name: jellyfin
+    port: 6767
+    targetPort: 6767
     protocol: TCP

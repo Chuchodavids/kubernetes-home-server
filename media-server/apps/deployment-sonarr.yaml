@@ -2,39 +2,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sabnzbd
+  name: sonarr
   namespace: media-server
   labels:
-    app: sabnzbd
+    app: sonarr
 spec:
   selector:
     matchLabels:
-      app: sabnzbd
+      app: sonarr
   replicas: 1
   template:
     metadata:
       labels:
-        app: sabnzbd
+        app: sonarr
     spec:
       containers:
-      - name: sabnzbd
-        image: ghcr.io/linuxserver/sabnzbd
+      - name: sonarr
+        image: ghcr.io/linuxserver/sonarr
         imagePullPolicy: IfNotPresent
         #securityContext:
           #runAsUser: 1001
         resources:
           requests:
-            cpu: 100m
+            cpu: 300m
             memory: 100Mi
           limits:
-            cpu: 2000m
-            memory: 2Gi
+            cpu: 1000m #1000m=1core
+            memory: 1Gi
         livenessProbe:
           httpGet:
-            scheme: HTTP
             path: /
-            port: 8080
-          initialDelaySeconds: 30
+            port: 8989
+          initialDelaySeconds: 60
           timeoutSeconds: 15
           successThreshold: 1
           failureThreshold: 3
@@ -56,25 +55,29 @@ spec:
         - name: TZ
           value: America/Chicago
         ports:
-        - containerPort:  8080
+        - containerPort: 8989
           name:  http
         volumeMounts:
-        - name: pv-downloads
-          mountPath: /data/downloads
+        - name: pv-shows
+          mountPath: /data/shows
         - name: nfs-appdata
           mountPath: /config
+        - name: pv-downloads
+          mountPath: /data/downloads
       volumes:
         - name: pv-downloads
           persistentVolumeClaim:
             claimName: pvc-downloads
+        - name: pv-shows
+          persistentVolumeClaim:
+            claimName: pvc-shows
         - name: nfs-appdata
           persistentVolumeClaim:
-            claimName: claim-appdata-sabnzbd
+            claimName: claim-appdata-sonarr
       restartPolicy: Always
 
 ---
-
-#downloads
+# Downloads
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -89,19 +92,19 @@ spec:
     requests:
       storage: 10Mi   
 
-
 ---
 
+#Shows
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-movies
+  name: pvc-shows
   namespace: media-server
 spec:
   accessModes:
     - ReadWriteMany 
   storageClassName: ""
-  volumeName: pv-movies
+  volumeName: pv-shows
   resources:
     requests:
       storage: 10Mi   
@@ -113,12 +116,12 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: claim-appdata-sabnzbd
+  name: claim-appdata-sonarr
   namespace: media-server
   labels:
-    app: sabnzbd
+    app: sonarr
   annotations:
-    nfs.io/storage-path: "sabnzbd"
+    nfs.io/storage-path: "sonarr"
 spec:
   storageClassName: nfs-appdata
   accessModes:
@@ -130,20 +133,20 @@ spec:
 
 ---
 
-#Service
+#Loadbalancer Service
 
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: sabnzbd
+  name: sonarr
   namespace: media-server
 spec:
   selector:
-    app: sabnzbd
+    app: sonarr
   type: LoadBalancer
   ports:
-  - name: sabnzbd
-    port: 8080 
-    targetPort: 8080
+  - name: sonarr
+    port: 8989
+    targetPort: 8989
     protocol: TCP

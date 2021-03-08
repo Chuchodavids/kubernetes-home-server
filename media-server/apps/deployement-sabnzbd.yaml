@@ -2,39 +2,40 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jellyfin
+  name: sabnzbd
   namespace: media-server
   labels:
-    app: jellyfin
+    app: sabnzbd
 spec:
   selector:
     matchLabels:
-      app: jellyfin
+      app: sabnzbd
   replicas: 1
   template:
     metadata:
       labels:
-        app: jellyfin
+        app: sabnzbd
     spec:
       containers:
-      - name:  jellyfin
-        image: ich777/jellyfin
+      - name: sabnzbd
+        image: ghcr.io/linuxserver/sabnzbd
         imagePullPolicy: IfNotPresent
         #securityContext:
           #runAsUser: 1001
         resources:
           requests:
-            cpu: 1000m
-            memory: 4000Mi
+            cpu: 100m
+            memory: 100Mi
           limits:
             cpu: 2000m
-            memory: 6Gi
+            memory: 2Gi
         livenessProbe:
           httpGet:
+            scheme: HTTP
             path: /
-            port: 32400
-          initialDelaySeconds: 30
-          timeoutSeconds: 5
+            port: 8080
+          initialDelaySeconds: 60
+          timeoutSeconds: 15
           successThreshold: 1
           failureThreshold: 3
           periodSeconds: 60
@@ -47,93 +48,50 @@ spec:
           #successThreshold: 1
           #failureThreshold: 3
           #periodSeconds: 10
+        env:      
+        - name: PUID
+          value: "10050"
+        - name: PGID
+          value: "10050"
+        - name: TZ
+          value: America/Chicago
         ports:
-        - containerPort: 8096
-          name: http
+        - containerPort:  8080
+          name:  http
         volumeMounts:
-        - name: pv-shows
-          mountPath: /data/shows
-        - name: pv-movies
-          mountPath: /data/movies
+        - name: pv-downloads
+          mountPath: /data/downloads
         - name: nfs-appdata
           mountPath: /config
-        - name: pv-nvidia
-          mountPath: /dev/dri
       volumes:
-        - name: pv-movies
+        - name: pv-downloads
           persistentVolumeClaim:
-            claimName: pvc-movies
-        - name: pv-nvidia
-          persistentVolumeClaim:
-            claimName: pvc-nvidia
-        - name: pv-shows
-          persistentVolumeClaim:
-            claimName: pvc-shows
+            claimName: pvc-downloads
         - name: nfs-appdata
           persistentVolumeClaim:
-            claimName: claim-appdata-jellyfin
+            claimName: claim-appdata-sabnzbd
       restartPolicy: Always
+
 ---
+
+#downloads
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-nvidia
-  namespace: media-server
-  labels:
-    app: pv-nvidia
-spec:
-  storageClassName: ""
-  accessModes:
-  - ReadWriteMany
-  resources:
-    requests:
-      storage: 10Gi
-
----
-
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: pv-nvidia
-spec:
-  capacity:
-    storage: 10Gi
-  volumeMode: Filesystem
-  accessModes:
-  - ReadWriteMany
-  persistentVolumeReclaimPolicy: Delete
-  storageClassName: local-storage
-  local:
-    path: /dev/dri
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - node1
-          - node2
----
-#shows
-
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-shows
+  name: pvc-downloads
   namespace: media-server
 spec:
   accessModes:
     - ReadWriteMany 
   storageClassName: ""
-  volumeName: pv-shows
+  volumeName: pv-downloads
   resources:
     requests:
       storage: 10Mi   
 
 
 ---
-# Movies
+
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -155,12 +113,12 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: claim-appdata-jellyfin
+  name: claim-appdata-sabnzbd
   namespace: media-server
   labels:
-    app: jellyfin
+    app: sabnzbd
   annotations:
-    nfs.io/storage-path: "jellyfin"
+    nfs.io/storage-path: "sabnzbd"
 spec:
   storageClassName: nfs-appdata
   accessModes:
@@ -178,14 +136,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: jellyfin
+  name: sabnzbd
   namespace: media-server
 spec:
   selector:
-    app: jellyfin
+    app: sabnzbd
   type: LoadBalancer
   ports:
-  - name: jellyfin
-    port: 6767
-    targetPort: 6767
+  - name: sabnzbd
+    port: 8080 
+    targetPort: 8080
     protocol: TCP
