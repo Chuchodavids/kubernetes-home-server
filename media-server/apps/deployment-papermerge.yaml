@@ -2,39 +2,39 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sonarr
+  name: papermerge
   namespace: media-server
   labels:
-    app: sonarr
+    app: papermerge
 spec:
   selector:
     matchLabels:
-      app: sonarr
+      app: papermerge
   replicas: 1
   template:
     metadata:
       labels:
-        app: sonarr
+        app: papermerge
     spec:
       containers:
-      - name: sonarr
-        image: ghcr.io/linuxserver/sonarr
-        imagePullPolicy: IfNotPresent
+      - name: papermerge
         #securityContext:
           #runAsUser: 1001
+        image: ghcr.io/linuxserver/papermerge
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
             cpu: 300m
             memory: 100Mi
           limits:
-            cpu: 1000m #1000m=1core
-            memory: 1Gi
+            cpu: 500m
+            memory: 256Mi
         livenessProbe:
           httpGet:
             path: /
-            port: 8989
+            port: 8000
           initialDelaySeconds: 60
-          timeoutSeconds: 15
+          timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 3
           periodSeconds: 60
@@ -49,46 +49,42 @@ spec:
           #periodSeconds: 10
         env:      
         - name: PUID
-          value: "10050"
+          value: "1000"
         - name: PGID
-          value: "10050"
+          value: "1000"
         - name: TZ
           value: America/Chicago
         ports:
-        - containerPort: 8989
+        - containerPort:  8000
           name:  http
         volumeMounts:
-        - name: pv-shows
-          mountPath: /data/shows
+        - name: pv-documents
+          mountPath: /data/
         - name: nfs-appdata
           mountPath: /config
-        - name: pv-downloads
-          mountPath: /data/downloads
       volumes:
-        - name: pv-downloads
+        - name: pv-documents
           persistentVolumeClaim:
-            claimName: pvc-downloads
-        - name: pv-shows
-          persistentVolumeClaim:
-            claimName: pvc-shows
+            claimName: pvc-documents
         - name: nfs-appdata
           persistentVolumeClaim:
-            claimName: pvc-appdata-sonarr
+            claimName: pvc-appdata-papermerge
       restartPolicy: Always
 
 ---
+
 
 #appdata
 
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: pvc-appdata-sonarr
+  name: pvc-appdata-papermerge
   namespace: media-server
   labels:
-    app: sonarr
+    app: papermerge
   annotations:
-    nfs.io/storage-path: "sonarr"
+    nfs.io/storage-path: "papermerge"
 spec:
   storageClassName: nfs-appdata
   accessModes:
@@ -100,20 +96,19 @@ spec:
 
 ---
 
-#Loadbalancer Service
-
+#Service
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: sonarr
+  name: papermerge
   namespace: media-server
 spec:
   selector:
-    app: sonarr
+    app: papermerge
   type: LoadBalancer
   ports:
-  - name: sonarr
-    port: 8989
-    targetPort: 8989
+  - name: papermerge
+    port: 8000
+    targetPort: 8000
     protocol: TCP

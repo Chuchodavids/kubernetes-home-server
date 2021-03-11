@@ -2,7 +2,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: claim-downloads
+  name: pvc-downloads
   namespace: media-server
 spec:
   storageClassName: nfs-downloads
@@ -10,7 +10,7 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 1Mi
+      storage: 10Mi
 
 
 ---
@@ -18,7 +18,7 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: claim-appdata
+  name: pvc-appdata
   namespace: media-server
 spec:
   storageClassName: nfs-appdata
@@ -26,4 +26,55 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 256Mi
+      storage: 10Mi  
+
+---
+
+# Movies
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-movies
+  namespace: media-server
+spec:
+  accessModes:
+    - ReadWriteMany 
+  storageClassName: ""
+  volumeName: pv-movies
+  resources:
+    requests:
+      storage: 10Mi  
+
+
+
+---
+
+# Shows
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-shows
+  namespace: media-server
+spec:
+  accessModes:
+    - ReadWriteMany 
+  storageClassName: ""
+  volumeName: pv-shows
+  resources:
+    requests:
+      storage: 10Mi   
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-documents
+  namespace: media-server
+spec:
+  accessModes:
+    - ReadWriteMany 
+  storageClassName: ""
+  volumeName: pv-documents
+  resources:
+    requests:
+      storage: 10Mi   

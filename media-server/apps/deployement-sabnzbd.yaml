@@ -69,42 +69,8 @@ spec:
             claimName: pvc-downloads
         - name: nfs-appdata
           persistentVolumeClaim:
-            claimName: claim-appdata-sabnzbd
+            claimName: pvc-appdata-sabnzbd
       restartPolicy: Always
-
----
-
-#downloads
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-downloads
-  namespace: media-server
-spec:
-  accessModes:
-    - ReadWriteMany 
-  storageClassName: ""
-  volumeName: pv-downloads
-  resources:
-    requests:
-      storage: 10Mi   
-
-
----
-
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-movies
-  namespace: media-server
-spec:
-  accessModes:
-    - ReadWriteMany 
-  storageClassName: ""
-  volumeName: pv-movies
-  resources:
-    requests:
-      storage: 10Mi   
 
 ---
 
@@ -113,7 +79,7 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: claim-appdata-sabnzbd
+  name: pvc-appdata-sabnzbd
   namespace: media-server
   labels:
     app: sabnzbd
@@ -125,7 +91,7 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 256Mi
+      storage: 10Mi
 
 
 ---

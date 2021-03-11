@@ -73,42 +73,8 @@ spec:
             claimName: pvc-shows
         - name: nfs-appdata
           persistentVolumeClaim:
-            claimName: claim-appdata-bazarr
+            claimName: pvc-appdata-bazarr
       restartPolicy: Always
-
----
-
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-shows
-  namespace: media-server
-spec:
-  accessModes:
-    - ReadWriteMany 
-  storageClassName: ""
-  volumeName: pv-shows
-  resources:
-    requests:
-      storage: 10Mi   
-
-
----
-
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-movies
-  namespace: media-server
-spec:
-  accessModes:
-    - ReadWriteMany 
-  storageClassName: ""
-  volumeName: pv-movies
-  resources:
-    requests:
-      storage: 10Mi   
-
 ---
 
 #appdata
@@ -116,7 +82,7 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: claim-appdata-bazarr
+  name: pvc-appdata-bazarr
   namespace: media-server
   labels:
     app: bazarr
@@ -128,7 +94,7 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 256Mi
+      storage: 10Mi
 
 
 ---

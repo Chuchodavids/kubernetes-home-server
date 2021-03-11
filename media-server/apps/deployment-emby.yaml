@@ -77,67 +77,8 @@ spec:
             claimName: pvc-shows
         - name: nfs-appdata
           persistentVolumeClaim:
-            claimName: claim-appdata-emby
+            claimName: pvc-appdata-emby
       restartPolicy: Always
-
----
-
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: pv-nvidia
-spec:
-  capacity:
-    storage: 10Gi
-  volumeMode: Filesystem
-  accessModes:
-  - ReadWriteMany
-  persistentVolumeReclaimPolicy: Delete
-  storageClassName: local-storage
-  local:
-    path: /dev/dri
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - node1
-          - node2
----
-#shows
-
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-shows
-  namespace: media-server
-spec:
-  accessModes:
-    - ReadWriteMany 
-  storageClassName: ""
-  volumeName: pv-shows
-  resources:
-    requests:
-      storage: 10Mi   
-
-
----
-# Movies
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-movies
-  namespace: media-server
-spec:
-  accessModes:
-    - ReadWriteMany 
-  storageClassName: ""
-  volumeName: pv-movies
-  resources:
-    requests:
-      storage: 10Mi   
 
 ---
 
@@ -146,7 +87,7 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: claim-appdata-emby
+  name: pvc-appdata-emby
   namespace: media-server
   labels:
     app: emby
@@ -158,7 +99,7 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 256Mi
+      storage: 10Mi
 
 
 ---

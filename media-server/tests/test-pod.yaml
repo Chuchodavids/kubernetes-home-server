@@ -22,7 +22,7 @@ spec:
   volumes:
     - name: nfs-downloads
       persistentVolumeClaim:
-        claimName: claim-downloads
+        claimName: pvc-downloads
     - name: nfs-appdata
       persistentVolumeClaim:
-        claimName: claim-appdata
+        claimName: pvc-appdata

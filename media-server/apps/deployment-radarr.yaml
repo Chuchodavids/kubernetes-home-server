@@ -74,42 +74,8 @@ spec:
             claimName: pvc-downloads
         - name: nfs-appdata
           persistentVolumeClaim:
-            claimName: claim-appdata-radarr
+            claimName: pvc-appdata-radarr
       restartPolicy: Always
-
----
-
-#downloads
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-downloads
-  namespace: media-server
-spec:
-  accessModes:
-    - ReadWriteMany 
-  storageClassName: ""
-  volumeName: pv-downloads
-  resources:
-    requests:
-      storage: 10Mi   
-
-
----
-
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-movies
-  namespace: media-server
-spec:
-  accessModes:
-    - ReadWriteMany 
-  storageClassName: ""
-  volumeName: pv-movies
-  resources:
-    requests:
-      storage: 10Mi   
 
 ---
 
@@ -118,7 +84,7 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: claim-appdata-radarr
+  name: pvc-appdata-radarr
   namespace: media-server
   labels:
     app: radarr
@@ -130,7 +96,7 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 256Mi
+      storage: 10Mi
 
 
 ---

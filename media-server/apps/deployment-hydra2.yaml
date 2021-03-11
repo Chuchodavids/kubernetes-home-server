@@ -49,9 +49,9 @@ spec:
           #periodSeconds: 10
         env:      
         - name: PUID
-          value: "10050"
+          value: "1000"
         - name: PGID
-          value: "10050"
+          value: "1000"
         - name: TZ
           value: America/Chicago
         ports:
@@ -68,7 +68,7 @@ spec:
             claimName: pvc-downloads
         - name: nfs-appdata
           persistentVolumeClaim:
-            claimName: claim-appdata-hydra2
+            claimName: pvc-appdata-hydra2
       restartPolicy: Always
 
 ---
@@ -96,7 +96,7 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: claim-appdata-hydra2
+  name: pvc-appdata-hydra2
   namespace: media-server
   labels:
     app: hydra2
@@ -108,7 +108,7 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 256Mi
+      storage: 10Mi
 
 
 ---
