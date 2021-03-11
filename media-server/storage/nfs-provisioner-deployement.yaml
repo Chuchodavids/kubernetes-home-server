@@ -23,16 +23,16 @@ spec:
       containers:
         - name: nfs-client-provisioner
           image: gcr.io/k8s-staging-sig-storage/nfs-subdir-external-provisioner:v4.0.0
-          readinessProbe:
-            exec:
-              command:
-                - cat
-                - /persistentvolumes/test
-            initialDelaySeconds: 60
-            timeoutSeconds: 15
-            successThreshold: 1
-            failureThreshold: 3
-            periodSeconds: 6
+          #readinessProbe:
+            #exec:
+              #command:
+                #- cat
+                #- /persistentvolumes/test
+            #initialDelaySeconds: 60
+            #timeoutSeconds: 30
+            #successThreshold: 1
+            #failureThreshold: 3
+            #periodSeconds: 15
           resources:
             requests:
               cpu: 100m

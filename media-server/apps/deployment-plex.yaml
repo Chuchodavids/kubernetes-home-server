@@ -1,0 +1,164 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plex
+  namespace: media-server
+  labels:
+    app: plex
+spec:
+  selector:
+    matchLabels:
+      app: plex
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: plex
+    spec:
+      hostNetwork: true
+      containers:
+      - name:  plex
+        image: linuxserver/plex
+        imagePullPolicy: IfNotPresent
+        #securityContext:
+          #runAsUser: 1001
+        resources:
+          requests:
+            cpu: 1000m
+            memory: 4000Mi
+          limits:
+            cpu: 2000m
+            memory: 6Gi
+        livenessProbe:
+          httpGet:
+            path: /web
+            port: 32400
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 60
+        #readinessProbe:
+          #httpGet:
+            #path: /_status/healthz
+            #port: 80
+          #initialDelaySeconds: 5
+          #timeoutSeconds: 2
+          #successThreshold: 1
+          #failureThreshold: 3
+          #periodSeconds: 10
+        env:
+          - name: VERSION
+            value: docker
+          - name: PUID
+            value: "99"
+          - name: PGID
+            value: "100"
+        securityContext:
+          privileged: true
+        ports:
+        - containerPort: 32400
+          name: http
+        volumeMounts:
+        - name: pv-shows
+          mountPath: /data/shows
+        - name: pv-movies
+          mountPath: /data/movies
+        - name: nfs-appdata
+          mountPath: /config
+        - name: pv-nvidia
+          mountPath: /dev/dri
+      volumes:
+        - name: pv-movies
+          persistentVolumeClaim:
+            claimName: pvc-movies
+        - name: pv-nvidia
+          hostPath:
+            path: /dev/dri
+            type: Directory
+        - name: pv-shows
+          persistentVolumeClaim:
+            claimName: pvc-shows
+        - name: nfs-appdata
+          persistentVolumeClaim:
+            claimName: claim-appdata-plex
+      restartPolicy: Always
+
+---
+
+#shows
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-shows
+  namespace: media-server
+spec:
+  accessModes:
+    - ReadWriteMany 
+  storageClassName: ""
+  volumeName: pv-shows
+  resources:
+    requests:
+      storage: 10Mi   
+
+
+---
+# Movies
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-movies
+  namespace: media-server
+spec:
+  accessModes:
+    - ReadWriteMany 
+  storageClassName: ""
+  volumeName: pv-movies
+  resources:
+    requests:
+      storage: 10Mi   
+
+---
+
+#appdata
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: claim-appdata-plex
+  namespace: media-server
+  labels:
+    app: plex
+  annotations:
+    nfs.io/storage-path: "plex"
+spec:
+  storageClassName: nfs-appdata
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 256Mi
+
+
+#---
+
+##Service
+
+
+#apiVersion: v1
+#kind: Service
+#metadata:
+  #name: plex
+  #namespace: media-server
+#spec:
+  #selector:
+    #app: plex
+  #type: NodePort
+  #ports:
+  #- name: plex
+    #port: 32400
+    #targetPort: 32400
+    #protocol: TCP
+    #nodePort: 32400

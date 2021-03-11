@@ -20,6 +20,7 @@ spec:
         app: media-server
         department: transmission
     spec:
+      hostNetwork: true
       volumes:
       - name: pv-transmission-config
         persistentVolumeClaim:

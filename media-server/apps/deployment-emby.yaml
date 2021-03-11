@@ -2,24 +2,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jellyfin
+  name: emby
   namespace: media-server
   labels:
-    app: jellyfin
+    app: emby
 spec:
   selector:
     matchLabels:
-      app: jellyfin
+      app: emby
   replicas: 1
   template:
     metadata:
       labels:
-        app: jellyfin
+        app: emby
     spec:
       containers:
-      - name:  jellyfin
-        image: ich777/jellyfin
+      - name:  emby
+        securityContext:
+          privileged: true
+        image: linuxserver/emby
         imagePullPolicy: IfNotPresent
+        env:
+          - name: NVIDIA_VISIBLE_DEVICES
+            value: /dev/dri
         #securityContext:
           #runAsUser: 1001
         resources:
@@ -32,7 +37,7 @@ spec:
         livenessProbe:
           httpGet:
             path: /
-            port: 32400
+            port: 8096
           initialDelaySeconds: 60
           timeoutSeconds: 5
           successThreshold: 1
@@ -64,30 +69,16 @@ spec:
           persistentVolumeClaim:
             claimName: pvc-movies
         - name: pv-nvidia
-          persistentVolumeClaim:
-            claimName: pvc-nvidia
+          hostPath:
+            path: /dev/dri
+            type: Directory
         - name: pv-shows
           persistentVolumeClaim:
             claimName: pvc-shows
         - name: nfs-appdata
           persistentVolumeClaim:
-            claimName: claim-appdata-jellyfin
+            claimName: claim-appdata-emby
       restartPolicy: Always
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-nvidia
-  namespace: media-server
-  labels:
-    app: pv-nvidia
-spec:
-  storageClassName: ""
-  accessModes:
-  - ReadWriteMany
-  resources:
-    requests:
-      storage: 10Gi
 
 ---
 
@@ -155,12 +146,12 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: claim-appdata-jellyfin
+  name: claim-appdata-emby
   namespace: media-server
   labels:
-    app: jellyfin
+    app: emby
   annotations:
-    nfs.io/storage-path: "jellyfin"
+    nfs.io/storage-path: "emby"
 spec:
   storageClassName: nfs-appdata
   accessModes:
@@ -178,14 +169,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: jellyfin
+  name: emby
   namespace: media-server
 spec:
   selector:
-    app: jellyfin
+    app: emby
   type: LoadBalancer
   ports:
-  - name: jellyfin
-    port: 6767
-    targetPort: 6767
+  - name: emby
+    port: 8096
+    targetPort: 8096
     protocol: TCP
