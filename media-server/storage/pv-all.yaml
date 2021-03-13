@@ -1,3 +1,5 @@
+# movies
+
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -8,10 +10,12 @@ spec:
   accessModes:
     - ReadWriteMany
   nfs:
-    server: 192.168.200.169
-    path: "/mnt/user/Movies" 
+    server: 192.168.200.169  # ip NFS server
+    path: "/mnt/user/Movies"  # Path for movies
     
 ---
+
+# shows
 
 apiVersion: v1
 kind: PersistentVolume
@@ -23,11 +27,13 @@ spec:
   accessModes:
     - ReadWriteMany
   nfs:
-    server: 192.168.200.169
-    path: "/mnt/user/Shows" 
+    server: 192.168.200.169  # ip NFS Server
+    path: "/mnt/user/Shows"   # Path for shows
 
 
 ---
+
+# downloads
 
 apiVersion: v1
 kind: PersistentVolume
@@ -39,10 +45,13 @@ spec:
   accessModes:
     - ReadWriteMany
   nfs:
-    server: 192.168.200.169
-    path: "/mnt/user/Downloads"
+    server: 192.168.200.169  #ip NFS server 
+    path: "/mnt/user/Downloads" # Path for Downloads
+
 ---
 
+
+# documents
 
 apiVersion: v1
 kind: PersistentVolume
@@ -54,5 +63,5 @@ spec:
   accessModes:
     - ReadWriteMany
   nfs:
-    server: 192.168.200.169
-    path: "/mnt/user/paperless/smb"
+    server: 192.168.200.169  # Ip NFS server
+    path: "/mnt/user/paperless/smb"  # Path for documents

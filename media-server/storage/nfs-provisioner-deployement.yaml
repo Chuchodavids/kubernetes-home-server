@@ -6,6 +6,7 @@ metadata:
   labels:
     app: nfs-client-provisioner
     type: nfs
+    #replace with required namespace
   namespace: media-server
 spec:
   replicas: 1
@@ -53,8 +54,8 @@ spec:
       volumes:
         - name: nfs-client-root
           nfs:
-            server: 192.168.200.169
-            path: /mnt/user/kube
+            server: 192.168.200.169 # ip of your NFS server
+            path: /mnt/user/kube  # path in your NFS server
 
 
 ---
