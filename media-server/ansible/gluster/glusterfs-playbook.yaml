@@ -1,0 +1,27 @@
+- hosts: all
+  tasks:
+  # install dependency
+    - name: Install software-properties-common
+      apt:
+        name: software-properties-common
+        state: latest
+  # add gluster repo
+    - name: add gluster repository 
+      ansible.builtin.apt_repository:
+        repo: ppa:gluster/glusterfs-7
+        state: present
+  
+  # install grlusterfs
+    - name: install gluster-server
+      apt:
+        name: glusterfs-server
+
+# start glusterfs
+    - name: start glusterfs
+      ansible.builtin.service:
+        name: glusterd
+        state: started
+    
+    #- name: add peers to gluster
+      #ansible.builtin.command: gluster peer probe node2
+     
