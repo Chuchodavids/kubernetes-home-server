@@ -9,6 +9,10 @@
           - vim
           - git
           - wget
+          - gnupg2
+          - software-properties-common
+          - ca-certificates
+          - lsb-release
 
 # add google repo
 
@@ -29,21 +33,69 @@
           - kubelet
           - kubeadm
           - kubectl
+# hold kube packages
+
+    - name: hold kubeadm
+      dpkg_selections:
+        name: kubeadm
+        selection: hold
+
+    - name: hold kubectl
+      dpkg_selections:
+        name: kubectl
+        selection: hold
+
+    - name: hold kubelet
+      dpkg_selections:
+        name: kubelet
+        selection: hold
+
 # Swapp off  
 
     - name: swapoff
       command: "swapoff -a"
       register: result
 
+# Modprobe stuff
+
     - name: modprobe
       command: "modprobe overlay"
+      register: result
 
-    - name: modprobe2
-      command: "modprobe br.netfilter"
+    - name: netfilter
+      command: "modprobe br_netfilter"
+      register: result
     
-    #- name: swapoff
-      #ansible.builtin.shell: tee /etc/sysctl.d/kubernetes.conf<<EOF
-#net.bridge.bridge-nf-call-ip6tables = 1
-#net.bridge.bridge-nf-call-iptables = 1
-#net.ipv4.ip_forward = 1
-#EOF
+    
+    - name: netbridge
+      copy:
+        content: "net.bridge.bridge-nf-call-ip6tables = 1 \nnet.bridge.bridge-nf-call-iptables = 1 \nnet.ipv4.ip_forward = 1"
+        dest: /etc/sysctl.d/kubernetes.conf
+
+# Docker config
+    - name: add docker key
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add docker repo
+      ansible.builtin.apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: install docker
+      apt:
+        name:
+          - containerd.io=1.2.13-2
+          - docker-ce=5:19.03.11~3-0~ubuntu-focal
+          - docker-ce-cli=5:19.03.11~3-0~ubuntu-focal
+
+    - name: docker system enable
+      command: "mkdir -p /etc/systemd/system/docker.service.d"
+      register: result
+
+    - name: docker daemon
+      ansible.builtin.script: 
+        cmd: .docker-daemon.sh
+      args:
+        creates: /etc/docker/daemon.json 
