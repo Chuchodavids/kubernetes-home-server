@@ -43,15 +43,16 @@ spec:
           successThreshold: 1
           failureThreshold: 3
           periodSeconds: 60
-        #readinessProbe:
-          #httpGet:
-            #path: /_status/healthz
-            #port: 80
-          #initialDelaySeconds: 5
-          #timeoutSeconds: 2
-          #successThreshold: 1
-          #failureThreshold: 3
-          #periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /data/movies/health
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 45
         ports:
         - containerPort: 8096
           name: http
@@ -80,28 +81,6 @@ spec:
             endpoints: glusterfs-cluster
             path: gv0/appdata/emby
       restartPolicy: Always
-
----
-
-#appdata
-
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: pvc-appdata-emby
-  namespace: media-server
-  labels:
-    app: emby
-  annotations:
-    nfs.io/storage-path: "emby"
-spec:
-  storageClassName: nfs-appdata
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 10Mi
-
 
 ---
 

@@ -16,9 +16,10 @@ spec:
       labels:
         app: plex
     spec:
+      hostNetwork: true  # USE ONLY FOR INITIAL SETUP
       containers:
       - name:  plex
-        image: linuxserver/plex
+        image: plexinc/pms-docker
         imagePullPolicy: IfNotPresent
         #securityContext:
           #runAsUser: 1001
@@ -38,18 +39,19 @@ spec:
           successThreshold: 1
           failureThreshold: 3
           periodSeconds: 60
-        #readinessProbe:
-          #httpGet:
-            #path: /_status/healthz
-            #port: 80
-          #initialDelaySeconds: 5
-          #timeoutSeconds: 2
-          #successThreshold: 1
-          #failureThreshold: 3
-          #periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /data/movies/health
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 45
         env:
           - name: VERSION
-            value: docker
+            value: latest
           - name: PUID
             value: "99"
           - name: PGID
@@ -87,28 +89,6 @@ spec:
 
 ---
 
-#appdata
-
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: pvc-appdata-plex
-  namespace: media-server
-  labels:
-    app: plex
-  annotations:
-    nfs.io/storage-path: "plex"
-spec:
-  storageClassName: nfs-appdata
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 10Mi
-
-
----
-
 #Service
 
 apiVersion: v1
@@ -119,9 +99,10 @@ metadata:
 spec:
   selector:
     app: plex
-  type: LoadBalancer
+  type: NodePort
   ports:
   - name: plex
     port: 32400
     targetPort: 32400
     protocol: TCP
+    nodePort: 32400

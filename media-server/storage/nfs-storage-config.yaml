@@ -1,0 +1,188 @@
+#this file contains the pvc, pv and sc for nfs storage provisioner
+
+
+
+
+##########################################################
+#                                                        #
+#                  Namespaces                            #
+#                                                        #
+##########################################################
+
+# Media Server namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: media-server  #change to desired Namespace
+
+
+---
+
+##########################################################
+#                                                        #
+#                  StorageClasses                        #
+#                                                        #
+##########################################################
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-appdata
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: k8s-sigs.io/nfs-subdir-external-provisioner # or choose another name, must match deployment's env PROVISIONER_NAME'
+parameters:
+  pathPattern: "${.PVC.namespace}/appdata/${.PVC.annotations.nfs.io/storage-path}"  # this will create a folder with the name of the namespace, then a folder "appdata" and finally the name in the annotation for the container
+  onDelete: retain
+
+
+---
+##########################################################
+#                                                        #
+#                  Persistent Volumes                    #
+#                                                        #
+##########################################################
+
+# PV Movies
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-movies
+spec:
+  capacity:
+    storage: 10Mi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.200.169  # ip NFS server
+    path: "/mnt/user/Movies"  # Path for movies
+    
+---
+
+# PV Shows
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-shows
+spec:
+  capacity:
+    storage: 10Mi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.200.169  # ip NFS Server
+    path: "/mnt/user/Shows"   # Path for shows
+
+
+---
+
+# PV Downloads
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-downloads
+spec:
+  capacity:
+    storage: 10Mi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.200.169  #ip NFS server 
+    path: "/mnt/user/Downloads" # Path for Downloads
+
+---
+
+
+# PV Documents
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-documents
+spec:
+  capacity:
+    storage: 10Mi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.200.169  # Ip NFS server
+    path: "/mnt/user/paperless/smb"  # Path for documents
+
+
+
+---
+##########################################################
+#                                                        #
+#                  persistent volume claims              #
+#                                                        #
+##########################################################
+
+
+# PVC Downloads
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-downloads
+  namespace: media-server  # Replaced with desired namespace
+spec:
+  storageClassName: ""
+  volumeName: pv-downloads
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Mi
+
+---
+
+# PVC Movies
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-movies
+  namespace: media-server # Replaced with desired namespace
+spec:
+  accessModes:
+    - ReadWriteMany 
+  storageClassName: ""
+  volumeName: pv-movies
+  resources:
+    requests:
+      storage: 10Mi  
+
+
+---
+
+# PVC Shows
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-shows
+  namespace: media-server # Replaced with desired namespace
+spec:
+  accessModes:
+    - ReadWriteMany 
+  storageClassName: ""
+  volumeName: pv-shows
+  resources:
+    requests:
+      storage: 10Mi   
+---
+
+# PVC Documents
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-documents
+  namespace: media-server # Replaced with desired namespace
+spec:
+  accessModes:
+    - ReadWriteMany 
+  storageClassName: ""
+  volumeName: pv-documents
+  resources:
+    requests:
+      storage: 10Mi   

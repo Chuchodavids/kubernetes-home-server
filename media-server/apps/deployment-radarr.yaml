@@ -39,15 +39,16 @@ spec:
           successThreshold: 1
           failureThreshold: 3
           periodSeconds: 60
-        #readinessProbe:
-          #httpGet:
-            #path: /_status/healthz
-            #port: 80
-          #initialDelaySeconds: 5
-          #timeoutSeconds: 2
-          #successThreshold: 1
-          #failureThreshold: 3
-          #periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /data/movies/health
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 4
         env:      
         - name: PUID
           value: "10050"
