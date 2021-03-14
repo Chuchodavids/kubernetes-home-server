@@ -64,7 +64,7 @@ spec:
           mountPath: /data/shows
         - name: pv-movies
           mountPath: /data/movies
-        - name: nfs-appdata
+        - name: glusterfs-appdata
           mountPath: /config
         - name: pv-nvidia
           mountPath: /dev/dri
@@ -79,9 +79,10 @@ spec:
         - name: pv-shows
           persistentVolumeClaim:
             claimName: pvc-shows
-        - name: nfs-appdata
-          persistentVolumeClaim:
-            claimName: pvc-appdata-plex
+        - name: glusterfs-appdata
+          glusterfs:
+            endpoints: glusterfs-cluster
+            path: gv0/appdata/plex/
       restartPolicy: Always
 
 ---

@@ -76,8 +76,9 @@ spec:
           persistentVolumeClaim:
             claimName: pvc-shows
         - name: nfs-appdata
-          persistentVolumeClaim:
-            claimName: pvc-appdata-emby
+          glusterfs:
+            endpoints: glusterfs-cluster
+            path: gv0/appdata/emby
       restartPolicy: Always
 
 ---

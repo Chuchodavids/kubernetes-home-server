@@ -135,6 +135,8 @@
     - name: Setup kubeconfig 
       command: "{{ item }}"
       with_items:
+       - rm -rf /home/chuchodavids/.kube
+       - rm -rf /root/.kube
        - mkdir /home/chuchodavids/.kube
        - mkdir /root/.kube
        - \cp -r /etc/kubernetes/admin.conf /home/chuchodavids/.kube/config
@@ -152,17 +154,17 @@
     - name: Install calico pod network
       command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 
-    #- name: Generate join command
-      #command: kubeadm token create --print-join-command
-      #register: join_command
+    - name: Generate join command
+      command: kubeadm token create --print-join-command
+      register: join_command
 
-    #- name: Copy join command to local file
-      #local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
+    - name: Copy join command to local file
+      local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
 
-#- hosts: nodes
-  #tasks:
-    #- name: Copy the join command to server location
-      #copy: src=join-command dest=/tmp/join-command.sh mode=0777
+- hosts: nodes
+  tasks:
+    - name: Copy the join command to server location
+      copy: src=join-command dest=/tmp/join-command.sh mode=0777
 
-    #- name: Join the node to cluster
-      #command: sh /tmp/join-command.sh
+    - name: Join the node to cluster
+      command: sh /tmp/join-command.sh
