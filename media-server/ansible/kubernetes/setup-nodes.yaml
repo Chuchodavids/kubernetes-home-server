@@ -1,7 +1,7 @@
 - hosts: all
   tasks:
   # install dependencies
-    - name: Install packages
+    - name: Install needed packages
       apt:
         name:
           - curl
@@ -16,18 +16,18 @@
 
 # add google repo
 
-    - name: add google key
+    - name: add google repo key
       ansible.builtin.apt_key:
         url: https://packages.cloud.google.com/apt/doc/apt-key.gpg 
         state: present
 
-    - name: Add google repo
+    - name: Add google repository
       ansible.builtin.apt_repository:
         repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
         state: present
 
 # install kubernetes
-    - name: install kubernetes
+    - name: install kubernetes packages
       apt: 
         name: 
           - kubelet
@@ -46,6 +46,7 @@
         selection: hold
 
     - name: hold kubelet
+      become: yes
       dpkg_selections:
         name: kubelet
         selection: hold
@@ -82,12 +83,12 @@
         dest: /etc/sysctl.d/kubernetes.conf
 
 # Docker config
-    - name: add docker key
+    - name: add docker repository key
       ansible.builtin.apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
         state: present
 
-    - name: Add docker repo
+    - name: Add docker repository
       ansible.builtin.apt_repository:
         repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
         state: present
@@ -107,19 +108,17 @@
       register: result
 
 # cgroups config for docker
-    - name: create sh docker daemon on hosts
+    - name: create script for docker daemon on hosts
       copy: src=docker-daemon.sh dest=/tmp/docker-daemon.sh mode=0777
 
     - name: executing docker daemon script
       command: sh /tmp/docker-daemon.sh
 
 # restarts docker
-    - name:
+    - name: restart docker
       ansible.builtin.service:
         name: docker
         state: restarted
-
-
 
 
 # Master config and initialization
@@ -131,29 +130,39 @@
       command: kubeadm init --pod-network-cidr=10.10.0.0/16
 
 
+      # change name of home folder to a varialbe. ---to patch
+
     - name: Setup kubeconfig 
       command: "{{ item }}"
       with_items:
-       - mkdir -p /root/.kube
-       - mkdir -p $HOME/.kube
-       - \cp -r /etc/kubernetes/admin.conf /$HOME/.kube/config
+       - mkdir /home/chuchodavids/.kube
+       - mkdir /root/.kube
+       - \cp -r /etc/kubernetes/admin.conf /home/chuchodavids/.kube/config
+       - \cp -r /etc/kubernetes/admin.conf /root/.kube/config
        #- chown $(id -u):$(id -g) $HOME/.kube/config
+    
+      # change name of home folder to a varialbe. ---to patch
+    - name: folder permissions for .kube
+      ansible.builtin.file:
+        path: /home/chuchodavids/.kube/config
+        owner: chuchodavids
+        group: chuchodavids
+        mode: 777
 
     - name: Install calico pod network
-      become: false
       command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 
-    - name: Generate join command
-      command: kubeadm token create --print-join-command
-      register: join_command
+    #- name: Generate join command
+      #command: kubeadm token create --print-join-command
+      #register: join_command
 
-    - name: Copy join command to local file
-      local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
+    #- name: Copy join command to local file
+      #local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
 
-- hosts: nodes
-  tasks:
-    - name: Copy the join command to server location
-      copy: src=join-command dest=/tmp/join-command.sh mode=0777
+#- hosts: nodes
+  #tasks:
+    #- name: Copy the join command to server location
+      #copy: src=join-command dest=/tmp/join-command.sh mode=0777
 
-    - name: Join the node to cluster
-      command: sh /tmp/join-command.sh
+    #- name: Join the node to cluster
+      #command: sh /tmp/join-command.sh
