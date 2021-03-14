@@ -1,0 +1,1 @@
+kubeadm join 192.168.200.99:6443 --token azwo4o.j72tmni6zzzydv89     --discovery-token-ca-cert-hash sha256:6d49645cb18d5aba6f771b821f1733ff11333f275a95675eb6ccfb11e00b830b 

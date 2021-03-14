@@ -52,9 +52,18 @@
 
 # Swapp off  
 
-    - name: swapoff
-      command: "swapoff -a"
-      register: result
+    - name: Remove swapfile from /etc/fstab
+      mount:
+        name: "{{ item }}"
+        fstype: swap
+        state: absent
+      with_items:
+        - swap
+        - none
+
+    - name: Disable swap
+      command: swapoff -a
+      when: ansible_swaptotal_mb > 0
 
 # Modprobe stuff
 
@@ -89,28 +98,62 @@
           - containerd.io=1.2.13-2
           - docker-ce=5:19.03.11~3-0~ubuntu-focal
           - docker-ce-cli=5:19.03.11~3-0~ubuntu-focal
-
-#seems to be redundant 
-
-    #- name: docker system enable
-      #command: "mkdir -p /etc/systemd/system/docker.service.d"
-      #register: result
+      notify:
+        - docker status
 
 
-# configures docker daemon.json. Not working for now
+    - name: docker system enable
+      command: "mkdir -p /etc/systemd/system/docker.service.d"
+      register: result
 
-    #- name: docker daemon
-      #ansible.builtin.script: 
-        #cmd: .docker-daemon.sh
-      #args:
-        #creates: /etc/docker/daemon.json 
+# cgroups config for docker
+    - name: create sh docker daemon on hosts
+      copy: src=docker-daemon.sh dest=/tmp/docker-daemon.sh mode=0777
 
+    - name: executing docker daemon script
+      command: sh /tmp/docker-daemon.sh
+
+# restarts docker
     - name:
       ansible.builtin.service:
         name: docker
         state: restarted
 
-    - name:
-      ansible.builtin.apt_service:
-        name: docker
-        state: enabled
+
+
+
+# Master config and initialization
+
+
+- hosts: master
+  tasks:
+    - name: Initialize the Kubernetes cluster using kubeadm
+      command: kubeadm init --pod-network-cidr=10.10.0.0/16
+
+
+    - name: Setup kubeconfig 
+      command: "{{ item }}"
+      with_items:
+       - mkdir -p /root/.kube
+       - mkdir -p $HOME/.kube
+       - \cp -r /etc/kubernetes/admin.conf /$HOME/.kube/config
+       #- chown $(id -u):$(id -g) $HOME/.kube/config
+
+    - name: Install calico pod network
+      become: false
+      command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+
+    - name: Generate join command
+      command: kubeadm token create --print-join-command
+      register: join_command
+
+    - name: Copy join command to local file
+      local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
+
+- hosts: nodes
+  tasks:
+    - name: Copy the join command to server location
+      copy: src=join-command dest=/tmp/join-command.sh mode=0777
+
+    - name: Join the node to cluster
+      command: sh /tmp/join-command.sh
