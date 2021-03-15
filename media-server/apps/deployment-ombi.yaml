@@ -1,0 +1,79 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ombi
+  namespace: media-server
+  labels:
+    app: ombi
+spec:
+  selector:
+    matchLabels:
+      app: ombi
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ombi
+    spec:
+      containers:
+      - name: ombi
+        image: ghcr.io/linuxserver/ombi
+        imagePullPolicy: IfNotPresent
+        #securityContext:
+          #runAsUser: 1001
+        resources:
+          requests:
+            cpu: 100m
+            memory: 250Mi
+          limits:
+            cpu: 250m #1000m=1core
+            memory: 500Mi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3579
+          initialDelaySeconds: 60
+          timeoutSeconds: 15
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 60
+        env:      
+        - name: PUID
+          value: "10050"
+        - name: PGID
+          value: "10050"
+        - name: TZ
+          value: America/Chicago
+        ports:
+        - containerPort: 3579
+          name:  http
+        volumeMounts:
+        - name: gfs-appdata
+          mountPath: /config
+      volumes:
+        - name: gfs-appdata
+          glusterfs:
+            endpoints: gfs-cluster
+            path: gv0/appdata/ombi
+      restartPolicy: Always
+
+---
+
+#Loadbalancer Service
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ombi
+  namespace: media-server
+spec:
+  selector:
+    app: ombi
+  type: LoadBalancer
+  ports:
+  - name: ombi
+    port: 3579
+    targetPort: 3579
+    protocol: TCP

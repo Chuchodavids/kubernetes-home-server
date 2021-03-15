@@ -1,0 +1,79 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tautulli
+  namespace: media-server
+  labels:
+    app: tautulli
+spec:
+  selector:
+    matchLabels:
+      app: tautulli
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: tautulli
+    spec:
+      containers:
+      - name: tautulli
+        image: ghcr.io/linuxserver/tautulli
+        imagePullPolicy: IfNotPresent
+        #securityContext:
+          #runAsUser: 1001
+        resources:
+          requests:
+            cpu: 100m
+            memory: 250Mi
+          limits:
+            cpu: 250m #1000m=1core
+            memory: 500Mi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8181
+          initialDelaySeconds: 60
+          timeoutSeconds: 15
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 60
+        env:      
+        - name: PUID
+          value: "10050"
+        - name: PGID
+          value: "10050"
+        - name: TZ
+          value: America/Chicago
+        ports:
+        - containerPort: 8181
+          name:  http
+        volumeMounts:
+        - name: gfs-appdata
+          mountPath: /config
+      volumes:
+        - name: gfs-appdata
+          glusterfs:
+            endpoints: gfs-cluster
+            path: gv0/appdata/tautulli
+      restartPolicy: Always
+
+---
+
+#Loadbalancer Service
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: tautulli
+  namespace: media-server
+spec:
+  selector:
+    app: tautulli
+  type: LoadBalancer
+  ports:
+  - name: tautulli
+    port: 8181
+    targetPort: 8181
+    protocol: TCP
