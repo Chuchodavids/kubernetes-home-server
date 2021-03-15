@@ -63,7 +63,7 @@ spec:
           mountPath: /data/shows
         - name: pv-movies
           mountPath: /data/movies
-        - name: nfs-appdata
+        - name: gfs-appdata
           mountPath: /config
       volumes:
         - name: pv-movies

@@ -38,15 +38,6 @@ spec:
           successThreshold: 1
           failureThreshold: 3
           periodSeconds: 60
-        #readinessProbe:
-          #httpGet:
-            #path: /_status/healthz
-            #port: 80
-          #initialDelaySeconds: 5
-          #timeoutSeconds: 2
-          #successThreshold: 1
-          #failureThreshold: 3
-          #periodSeconds: 10
         env:      
         - name: PUID
           value: "1000"
@@ -58,58 +49,14 @@ spec:
         - containerPort:  7878
           name:  http
         volumeMounts:
-        - name: pv-downloads
-          mountPath: /data/downloads
-        - name: nfs-appdata
+        - name: gfs-appdata
           mountPath: /config
       volumes:
-        - name: pv-downloads
-          persistentVolumeClaim:
-            claimName: pvc-downloads
-        - name: nfs-appdata
-          persistentVolumeClaim:
-            claimName: pvc-appdata-hydra2
+        - name: gfs-appdata
+          glusterfs:
+            endpoints: gfs-cluster
+            path: gv0/appdata/hydra2
       restartPolicy: Always
-
----
-#downloads
-
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-downloads
-  namespace: media-server
-spec:
-  accessModes:
-    - ReadWriteMany 
-  storageClassName: ""
-  volumeName: pv-downloads
-  resources:
-    requests:
-      storage: 10Mi   
-
-
----
-
-#appdata
-
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: pvc-appdata-hydra2
-  namespace: media-server
-  labels:
-    app: hydra2
-  annotations:
-    nfs.io/storage-path: "hydra2"
-spec:
-  storageClassName: nfs-appdata
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 10Mi
-
 
 ---
 

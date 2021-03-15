@@ -24,11 +24,11 @@ spec:
           #runAsUser: 1001
         resources:
           requests:
-            cpu: 300m
-            memory: 100Mi
+            cpu: 500m
+            memory: 500Mi
           limits:
-            cpu: 1000m #1000m=1core
-            memory: 1Gi
+            cpu: 2000m #1000m=1core
+            memory: 2Gi
         livenessProbe:
           httpGet:
             path: /

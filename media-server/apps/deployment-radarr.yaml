@@ -24,11 +24,11 @@ spec:
           #runAsUser: 1001
         resources:
           requests:
-            cpu: 300m
-            memory: 100Mi
+            cpu: 500m
+            memory: 500Mi
           limits:
-            cpu: 1000m
-            memory: 1Gi
+            cpu: 2000m
+            memory: 2Gi
         livenessProbe:
           httpGet:
             scheme: HTTP
@@ -48,7 +48,7 @@ spec:
           timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 3
-          periodSeconds: 4
+          periodSeconds: 60
         env:      
         - name: PUID
           value: "10050"
@@ -64,7 +64,7 @@ spec:
           mountPath: /data/downloads
         - name: pv-movies
           mountPath: /data/movies
-        - name: gs-appdata
+        - name: gfs-appdata
           mountPath: /config
       volumes:
         - name: pv-movies
@@ -75,7 +75,7 @@ spec:
             claimName: pvc-downloads
         - name: gfs-appdata
           glusterfs:
-            endpoints: glustefs-cluster
+            endpoints: gfs-cluster
             path: gv0/appdata/radarr
       restartPolicy: Always
 
