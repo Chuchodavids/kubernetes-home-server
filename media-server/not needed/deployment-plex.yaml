@@ -83,7 +83,7 @@ spec:
             claimName: pvc-shows
         - name: glusterfs-appdata
           glusterfs:
-            endpoints: glusterfs-cluster
+            endpoints: gfs-cluster
             path: gv0/appdata/plex/
       restartPolicy: Always
 

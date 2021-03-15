@@ -61,7 +61,7 @@ spec:
         volumeMounts:
         - name: pv-shows
           mountPath: /data/shows
-        - name: nfs-appdata
+        - name: gfs-appdata
           mountPath: /config
         - name: pv-downloads
           mountPath: /data/downloads
@@ -72,32 +72,11 @@ spec:
         - name: pv-shows
           persistentVolumeClaim:
             claimName: pvc-shows
-        - name: nfs-appdata
-          persistentVolumeClaim:
-            claimName: pvc-appdata-sonarr
+        - name: gfs-appdata
+          glusterfs:
+            endpoints: gfs-cluster
+            path: gv0/appdata/sonarr
       restartPolicy: Always
-
----
-
-#appdata
-
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: pvc-appdata-sonarr
-  namespace: media-server
-  labels:
-    app: sonarr
-  annotations:
-    nfs.io/storage-path: "sonarr"
-spec:
-  storageClassName: nfs-appdata
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 10Mi
-
 
 ---
 

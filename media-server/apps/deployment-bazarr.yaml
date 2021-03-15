@@ -72,34 +72,12 @@ spec:
         - name: pv-shows
           persistentVolumeClaim:
             claimName: pvc-shows
-        - name: nfs-appdata
-          persistentVolumeClaim:
-            claimName: pvc-appdata-bazarr
+        - name: gfs-appdata
+          glusterfs:
+            endpoints: gfs-cluster
+            path: gv0/appdata/bazarr
       restartPolicy: Always
 ---
-
-#appdata
-
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: pvc-appdata-bazarr
-  namespace: media-server
-  labels:
-    app: bazarr
-  annotations:
-    nfs.io/storage-path: "bazarr"
-spec:
-  storageClassName: nfs-appdata
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 10Mi
-
-
----
-
 #Service
 
 

@@ -61,7 +61,7 @@ spec:
           mountPath: /data/shows
         - name: pv-movies
           mountPath: /data/movies
-        - name: nfs-appdata
+        - name: gfs-appdata
           mountPath: /config
         - name: pv-nvidia
           mountPath: /dev/dri
@@ -76,9 +76,9 @@ spec:
         - name: pv-shows
           persistentVolumeClaim:
             claimName: pvc-shows
-        - name: nfs-appdata
+        - name: gfs-appdata
           glusterfs:
-            endpoints: glusterfs-cluster
+            endpoints: gfs-cluster
             path: gv0/appdata/emby
       restartPolicy: Always
 

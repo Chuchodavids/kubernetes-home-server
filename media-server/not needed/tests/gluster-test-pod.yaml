@@ -13,6 +13,6 @@ spec:
   volumes:
   - name: glusterfsvol
     glusterfs:
-      endpoints: glusterfs-cluster
+      endpoints: gfs-cluster
       path: gv0
       readOnly: false
