@@ -24,19 +24,19 @@ metadata:
 #                                                        #
 ##########################################################
 
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: nfs-appdata
-  annotations:
-    storageclass.kubernetes.io/is-default-class: "true"
-provisioner: k8s-sigs.io/nfs-subdir-external-provisioner # or choose another name, must match deployment's env PROVISIONER_NAME'
-parameters:
-  pathPattern: "${.PVC.namespace}/appdata/${.PVC.annotations.nfs.io/storage-path}"  # this will create a folder with the name of the namespace, then a folder "appdata" and finally the name in the annotation for the container
-  onDelete: retain
+#apiVersion: storage.k8s.io/v1
+#kind: StorageClass
+#metadata:
+  #name: nfs-appdata
+  #annotations:
+    #storageclass.kubernetes.io/is-default-class: "true"
+#provisioner: k8s-sigs.io/nfs-subdir-external-provisioner # or choose another name, must match deployment's env PROVISIONER_NAME'
+#parameters:
+  #pathPattern: "${.PVC.namespace}/appdata/${.PVC.annotations.nfs.io/storage-path}"  # this will create a folder with the name of the namespace, then a folder "appdata" and finally the name in the annotation for the container
+  #onDelete: retain
 
 
----
+#---
 ##########################################################
 #                                                        #
 #                  Persistent Volumes                    #
@@ -57,6 +57,36 @@ spec:
   nfs:
     server: 192.168.200.169  # ip NFS server
     path: "/mnt/user/Movies"  # Path for movies
+    
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-musicamd
+spec:
+  capacity:
+    storage: 10Mi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.200.169  # ip NFS server
+    path: "/mnt/user/MusicAMD"  # Path for movies
+    
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-music
+spec:
+  capacity:
+    storage: 10Mi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.200.169  # ip NFS server
+    path: "/mnt/user/Music"  # Path for movies
     
 ---
 
@@ -136,6 +166,39 @@ spec:
     requests:
       storage: 10Mi
 
+---
+
+# PVC music
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-music
+  namespace: media-server  # Replaced with desired namespace
+spec:
+  storageClassName: ""
+  volumeName: pv-music
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Mi
+
+---
+
+# PVC musicAMD
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-musicamd
+  namespace: media-server  # Replaced with desired namespace
+spec:
+  storageClassName: ""
+  volumeName: pv-musicamd
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Mi
 ---
 
 # PVC Movies

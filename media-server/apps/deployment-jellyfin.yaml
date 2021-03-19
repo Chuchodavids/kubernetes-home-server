@@ -1,0 +1,113 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin
+  namespace: media-server
+  labels:
+    app: jellyfin
+spec:
+  selector:
+    matchLabels:
+      app: jellyfin
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      containers:
+      - name:  jellyfin
+        securityContext:
+          privileged: true
+        image: linuxserver/jellyfin
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: NVIDIA_VISIBLE_DEVICES
+            value: /dev/dri
+        #securityContext:
+          #runAsUser: 1001
+        resources:
+          requests:
+            cpu: 1000m
+            memory: 4000Mi
+          limits:
+            cpu: 2000m
+            memory: 6Gi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8096
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 60
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /data/movies/health
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 45
+        ports:
+        - containerPort: 8096
+          name: http
+        volumeMounts:
+        - name: pv-shows
+          mountPath: /data/shows
+        - name: pv-movies
+          mountPath: /data/movies
+        - name: gfs-appdata
+          mountPath: /config
+        - name: pv-nvidia
+          mountPath: /dev/dri
+        - name: pv-music
+          mountPath: /data/music
+        - name: pv-musicamd
+          mountPath: /data/musicamd
+      volumes:
+        - name: pv-music
+          persistentVolumeClaim:
+            claimName: pvc-music
+        - name: pv-musicamd
+          persistentVolumeClaim:
+            claimName: pvc-musicamd
+        - name: pv-movies
+          persistentVolumeClaim:
+            claimName: pvc-movies
+        - name: pv-nvidia
+          hostPath:
+            path: /dev/dri
+            type: Directory
+        - name: pv-shows
+          persistentVolumeClaim:
+            claimName: pvc-shows
+        - name: gfs-appdata
+          glusterfs:
+            endpoints: gfs-cluster
+            path: gv0/appdata/jellyfin
+      restartPolicy: Always
+
+---
+
+#Service
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyfin
+  namespace: media-server
+spec:
+  selector:
+    app: jellyfin
+  type: LoadBalancer
+  ports:
+  - name: jellyfin
+    port: 8096
+    targetPort: 8096
+    protocol: TCP
