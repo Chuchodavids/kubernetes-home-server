@@ -4,7 +4,12 @@ kind: Deployment
 metadata:
   name: metrics-server
   namespace: kube-system
+  label:
+    app: metrics-server
 spec:
+  selector:
+    matchLabels:
+      app: metrics-server
   strategy:
     rollingUpdate:
       maxUnavailable: 0
