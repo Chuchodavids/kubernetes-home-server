@@ -5,6 +5,8 @@ metadata:
   name: metrics-server
   namespace: kube-system
 spec:
+  selector:
+    app: metrics-server
   ports:
   - name: https
     port: 443
