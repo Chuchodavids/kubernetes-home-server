@@ -29,7 +29,7 @@ spec:
               #command:
                 #- cat
                 #- /persistentvolumes/test
-            #initialDelaySeconds: 60
+            #initialDelaySeconds: 15
             #timeoutSeconds: 30
             #successThreshold: 1
             #failureThreshold: 3

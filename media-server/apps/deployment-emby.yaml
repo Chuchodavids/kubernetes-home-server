@@ -38,17 +38,17 @@ spec:
           httpGet:
             path: /
             port: 8096
-          initialDelaySeconds: 60
+          initialDelaySeconds: 15
           timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 3
-          periodSeconds: 60
+          periodSeconds: 10
         readinessProbe:
           exec:
             command:
               - cat
               - /data/movies/health
-          initialDelaySeconds: 60
+          initialDelaySeconds: 15
           timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 3
@@ -61,7 +61,7 @@ spec:
           mountPath: /data/shows
         - name: pv-movies
           mountPath: /data/movies
-        - name: gfs-appdata
+        - name: nfs-appdata
           mountPath: /config
         - name: pv-nvidia
           mountPath: /dev/dri
@@ -76,12 +76,29 @@ spec:
         - name: pv-shows
           persistentVolumeClaim:
             claimName: pvc-shows
-        - name: gfs-appdata
-          glusterfs:
-            endpoints: gfs-cluster
-            path: gv0/appdata/emby
+        - name: nfs-appdata
+          persistentVolumeClaim:
+            claimName: pvc-appdata-emby
       restartPolicy: Always
+---
+#appdata
 
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-appdata-emby
+  namespace: media-server
+  labels:
+    app: emby
+  annotations:
+    nfs.io/storage-path: "jellyfin"
+spec:
+  storageClassName: nfs-appdata
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Mi
 ---
 
 #Service

@@ -33,11 +33,11 @@ spec:
           httpGet:
             path: /
             port: 3579
-          initialDelaySeconds: 60
+          initialDelaySeconds: 15
           timeoutSeconds: 15
           successThreshold: 1
           failureThreshold: 3
-          periodSeconds: 60
+          periodSeconds: 10
         env:      
         - name: PUID
           value: "10050"

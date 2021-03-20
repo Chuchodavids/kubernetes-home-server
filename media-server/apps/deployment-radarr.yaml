@@ -34,21 +34,21 @@ spec:
             scheme: HTTP
             path: /
             port: 7878
-          initialDelaySeconds: 60
+          initialDelaySeconds: 30
           timeoutSeconds: 15
           successThreshold: 1
           failureThreshold: 3
-          periodSeconds: 60
+          periodSeconds: 10
         readinessProbe:
           exec:
             command:
               - cat
               - /data/movies/health
-          initialDelaySeconds: 60
+          initialDelaySeconds: 15
           timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 3
-          periodSeconds: 60
+          periodSeconds: 10
         env:      
         - name: PUID
           value: "10050"

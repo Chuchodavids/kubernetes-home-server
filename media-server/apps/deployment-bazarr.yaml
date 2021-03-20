@@ -33,17 +33,17 @@ spec:
           httpGet:
             path: /
             port: 6767
-          initialDelaySeconds: 60
+          initialDelaySeconds: 15
           timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 3
-          periodSeconds: 60
+          periodSeconds: 10
         readinessProbe:
           exec:
             command:
               - cat
               - /data/movies/health
-          initialDelaySeconds: 60
+          initialDelaySeconds: 15
           timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 3
