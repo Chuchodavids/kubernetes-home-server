@@ -1,0 +1,5 @@
+resources:
+  - apiservice.yaml
+  - deployment.yaml
+  - rbac.yaml
+  - service.yaml
