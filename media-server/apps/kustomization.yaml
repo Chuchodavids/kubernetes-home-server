@@ -1,7 +1,7 @@
 resources:
 # not working due to the sql database getting corrupted
 #- deployment-bazarr.yaml
-- deployment-radarr.yaml
+#- deployment-radarr.yaml
 #- deployment-sonarr.yaml
 #- deployment-emby.yaml
 - deployment-ombi.yaml
