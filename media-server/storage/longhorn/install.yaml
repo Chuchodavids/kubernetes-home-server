@@ -211,12 +211,12 @@ data:
     backup-target:
     backup-target-credential-secret:
     create-default-disk-labeled-nodes:
-    default-data-path:
+    default-data-path: /data/brick1
     replica-soft-anti-affinity:
     storage-over-provisioning-percentage:
-    storage-minimal-available-percentage:
+    storage-minimal-available-percentage: 10
     upgrade-checker:
-    default-replica-count:
+    default-replica-count: 2
     guaranteed-engine-cpu:
     default-longhorn-static-storage-class:
     backupstore-poll-interval:
