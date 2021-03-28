@@ -366,7 +366,7 @@ spec:
   - port: 80
     targetPort: 8000
     nodePort: null
-  type: ClusterIP
+  type: loadBalancer
 ---
 apiVersion: apps/v1
 kind: Deployment
