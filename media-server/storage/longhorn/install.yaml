@@ -440,3 +440,15 @@ parameters:
 #                   {"name":"backup", "task":"backup", "cron":"*/2 * * * *", "retain":1,
 #                    "labels": {"interval":"2m"}}]'
 ---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: longhorn-volv-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 1Gi

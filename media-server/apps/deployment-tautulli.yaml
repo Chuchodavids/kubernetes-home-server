@@ -49,13 +49,12 @@ spec:
         - containerPort: 8181
           name:  http
         volumeMounts:
-        - name: gfs-appdata
+        - name: volv
           mountPath: /config
       volumes:
-        - name: gfs-appdata
-          glusterfs:
-            endpoints: gfs-cluster
-            path: gv0/appdata/tautulli
+        - name: volv
+          persistenVolumeClaim:
+            claimName: longhorn-volv-pvc
       restartPolicy: Always
 
 ---
