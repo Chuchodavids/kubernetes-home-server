@@ -430,10 +430,11 @@ metadata:
 provisioner: driver.longhorn.io
 allowVolumeExpansion: true
 parameters:
+  onDelete: retain
   numberOfReplicas: "3"
   staleReplicaTimeout: "2880"
   fromBackup: ""
-#  diskSelector: "ssd,fast"
+  diskSelector: "config"
 #  nodeSelector: "storage,fast"
 #  recurringJobs: '[{"name":"snap", "task":"snapshot", "cron":"*/1 * * * *", "retain":1},
 #                   {"name":"backup", "task":"backup", "cron":"*/2 * * * *", "retain":1,
