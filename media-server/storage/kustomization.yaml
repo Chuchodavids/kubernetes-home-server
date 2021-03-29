@@ -2,4 +2,4 @@ resources:
 # - glusterfs-enpoints.yaml
 # - nfs-provisioner-deployement.yaml
 - nfs-storage-config.yaml
-- ./longhorn
+#- ./longhorn

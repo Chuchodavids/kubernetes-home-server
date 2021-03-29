@@ -64,7 +64,7 @@ spec:
           mountPath: /data/downloads
         - name: pv-movies
           mountPath: /data/movies
-        - name: gfs-appdata
+        - name: appdata
           mountPath: /config
       volumes:
         - name: pv-movies
@@ -73,11 +73,23 @@ spec:
         - name: pv-downloads
           persistentVolumeClaim:
             claimName: pvc-downloads
-        - name: gfs-appdata
-          glusterfs:
-            endpoints: gfs-cluster
-            path: gv0/appdata/radarr
+        - name: appdata
+          persistentVolumeClaim:
+            claimName: pvc-appdata-radarr
       restartPolicy: Always
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-appdata-radarr
+  namespace: media-server
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 8Gi
 
 ---
 #Service

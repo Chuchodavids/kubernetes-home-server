@@ -21,6 +21,8 @@ spec:
       labels:
         app: jellyfin
     spec:
+      nodeSelector:
+        igpu: "630"
       containers:
       - name:  jellyfin
         securityContext:
@@ -53,7 +55,7 @@ spec:
             command:
               - cat
               - /data/movies/health
-          initialDelaySeconds: 15
+          initialDelaySeconds: 60
           timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 3

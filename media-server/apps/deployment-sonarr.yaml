@@ -61,7 +61,7 @@ spec:
         volumeMounts:
         - name: pv-shows
           mountPath: /data/shows
-        - name: gfs-appdata
+        - name: appdata
           mountPath: /config
         - name: pv-downloads
           mountPath: /data/downloads
@@ -72,14 +72,25 @@ spec:
         - name: pv-shows
           persistentVolumeClaim:
             claimName: pvc-shows
-        - name: gfs-appdata
-          glusterfs:
-            endpoints: gfs-cluster
-            path: gv0/appdata/sonarr
+        - name: appdata
+          persistentVolumeClaim:
+            claimName: pvc-appdata-sonarr
       restartPolicy: Always
 
 ---
-
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-appdata-sonarr
+  namespace: media-server
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 8Gi
+---
 #Loadbalancer Service
 
 

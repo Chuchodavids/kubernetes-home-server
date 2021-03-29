@@ -1,0 +1,3 @@
+
+Minio backup
+kubectl create -f https://raw.githubusercontent.com/longhorn/longhorn/v1.0.0/deploy/backupstores/minio-backupstore.yaml
