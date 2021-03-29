@@ -211,12 +211,12 @@ data:
     backup-target:
     backup-target-credential-secret:
     create-default-disk-labeled-nodes:
-    default-data-path: /data/brick1
+    default-data-path:
     replica-soft-anti-affinity:
     storage-over-provisioning-percentage:
-    storage-minimal-available-percentage: 10
+    storage-minimal-available-percentage:
     upgrade-checker:
-    default-replica-count: 2
+    default-replica-count:
     guaranteed-engine-cpu:
     default-longhorn-static-storage-class:
     backupstore-poll-interval:
@@ -440,16 +440,3 @@ parameters:
 #                   {"name":"backup", "task":"backup", "cron":"*/2 * * * *", "retain":1,
 #                    "labels": {"interval":"2m"}}]'
 ---
-
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: longhorn-volv-pvc
-  namespace: media-server
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: longhorn
-  resources:
-    requests:
-      storage: 1Gi
