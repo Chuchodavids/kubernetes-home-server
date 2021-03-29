@@ -61,7 +61,7 @@ spec:
           mountPath: /data/shows
         - name: pv-movies
           mountPath: /data/movies
-        - name: nfs-appdata
+        - name: config
           mountPath: /config
         - name: pv-nvidia
           mountPath: /dev/dri
@@ -76,33 +76,26 @@ spec:
         - name: pv-shows
           persistentVolumeClaim:
             claimName: pvc-shows
-        - name: nfs-appdata
+        - name: config
           persistentVolumeClaim:
-            claimName: pvc-appdata-emby
+            claimName: pvc-long-emby
       restartPolicy: Always
 ---
-#appdata
-
-kind: PersistentVolumeClaim
 apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  name: pvc-appdata-emby
+  name: pvc-long-emby
   namespace: media-server
-  labels:
-    app: emby
-  annotations:
-    nfs.io/storage-path: "jellyfin"
 spec:
-  storageClassName: nfs-appdata
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
+  storageClassName: longhorn
   resources:
     requests:
-      storage: 10Mi
+      storage: 36Gi
 ---
 
 #Service
-
 
 apiVersion: v1
 kind: Service

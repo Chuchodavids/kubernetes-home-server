@@ -1,3 +1,2 @@
 resources:
 - install.yaml
-- pvc-longhorn.yaml
