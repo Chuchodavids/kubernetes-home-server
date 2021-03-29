@@ -4,4 +4,4 @@ resources:
 - ../storage
 - ../apps
 - ../metrics-server
-#- ../argocd
+- ../argocd
