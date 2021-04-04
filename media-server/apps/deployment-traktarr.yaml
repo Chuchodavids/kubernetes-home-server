@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  traktarr
+  namespace: media-server
+  labels:
+    app:  traktarr
+spec:
+  selector:
+    matchLabels:
+      app: traktarr
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  traktarr
+    spec:
+      containers:
+      - name:  traktarr
+        image: eafxx/traktarr
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        readinessProbe:
+          readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/health
+          initialDelaySeconds: 15
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PUID
+          value: "1000"
+        - name: TZ
+          value: America/Chicago
+        volumeMounts:
+        - name: config-map
+          mountPath: /config
+      volumes:
+        - name: config-map
+          configMap:
+            name: traktt-config
+      restartPolicy: Always

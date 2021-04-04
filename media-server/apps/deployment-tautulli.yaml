@@ -16,6 +16,7 @@ spec:
       labels:
         app: tautulli
     spec:
+      serviceAccount: media
       containers:
       - name: tautulli
         image: ghcr.io/linuxserver/tautulli

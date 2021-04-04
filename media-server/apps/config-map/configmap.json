@@ -1,0 +1,74 @@
+{
+    "automatic": {
+      "movies": {
+        "anticipated": 3,
+        "boxoffice": 10,
+        "interval": 24,
+        "popular": 3,
+        "trending": 3
+      },
+      "shows": {
+        "anticipated": 10,
+        "interval": 48,
+        "popular": 1,
+        "trending": 1
+      }
+    },
+    "core": {
+      "debug": false
+    },
+    "filters": {
+      "movies": {
+        "allowed_countries": ["us"],
+        "allowed_languages": ["en"],
+        "blacklisted_genres": [],
+        "blacklisted_max_runtime": 0,
+        "blacklisted_max_year": 2022,
+        "blacklisted_min_runtime": 60,
+        "blacklisted_min_year": 1990,
+        "blacklisted_title_keywords": [],
+        "blacklisted_tmdb_ids": [],
+        "disabled_for": [],
+        "rotten_tomatoes": ""
+      },
+      "shows": {
+        "allowed_countries": [],
+        "allowed_languages": [],
+        "blacklisted_genres": [],
+        "blacklisted_max_runtime": 0,
+        "blacklisted_max_year": 2019,
+        "blacklisted_min_runtime": 15,
+        "blacklisted_min_year": 2000,
+        "blacklisted_networks": [],
+        "blacklisted_title_keywords": [],
+        "blacklisted_tvdb_ids": [],
+        "disabled_for": []
+      }
+    },
+    "notifications": {
+      "verbose": true
+    },
+    "omdb": {
+      "api_key": ""
+    },
+    "radarr": {
+      "api_key": "e5612c297dca47dd80cc207a61981202",
+      "minimum_availability": "released",
+      "quality": "Any",
+      "root_folder": "/data/movies/Track",
+      "url": "http://192.168.200.169:7878/"
+    },
+    "sonarr": {
+      "api_key": "",
+      "language": "English",
+      "quality": "HD-1080p",
+      "root_folder": "/tv/",
+      "tags": {},
+      "url": "http://localhost:8989/"
+    },
+    "trakt": {
+      "client_id": "b8c3b508c067926ed65f3a3202b43ae6597384a318f9d38ab589a414b0d97b9d",
+      "client_secret": "427ad6197ba2e44c612587e1f61f5e8a603b36086ccfa93e1c76c67d2cec841b"
+    }
+  }
+  
