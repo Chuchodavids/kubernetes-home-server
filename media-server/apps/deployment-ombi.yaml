@@ -63,7 +63,7 @@ metadata:
 spec:
   selector:
     app: ombi
-  type: LoadBalancer
+  type: ClusterIP
   ports:
   - name: ombi
     port: 3579

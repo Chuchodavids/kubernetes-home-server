@@ -61,7 +61,7 @@ metadata:
 spec:
   selector:
     app: tautulli
-  type: LoadBalancer
+  type: ClusterIP
   ports:
   - name: tautulli
     port: 8181
