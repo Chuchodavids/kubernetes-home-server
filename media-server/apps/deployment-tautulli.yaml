@@ -48,28 +48,7 @@ spec:
         ports:
         - containerPort: 8181
           name:  http
-        volumeMounts:
-        - name: appdata
-          mountPath: /config
-      volumes:
-        - name: appdata
-          persistentVolumeClaim:
-            claimName: pvc-tautulli
       restartPolicy: Always
-
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-tautulli
-  namespace: media-server
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: longhorn
-  resources:
-    requests:
-      storage: 2G
 ---
 #Loadbalancer Service
 
@@ -82,7 +61,6 @@ metadata:
 spec:
   selector:
     app: tautulli
-  type: LoadBalancer
   ports:
   - name: tautulli
     port: 8181
