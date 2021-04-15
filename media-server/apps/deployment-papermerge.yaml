@@ -1,0 +1,97 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: papermerge
+  namespace: media-server
+  labels:
+    app: papermerge
+spec:
+  selector:
+    matchLabels:
+      app: papermerge
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: papermerge
+    spec:
+      containers:
+      - name:  papermerge
+        image: ghcr.io/linuxserver/papermerge
+        imagePullPolicy: IfNotPresent
+      #   #securityContext:
+      #     #runAsUser: 1001
+      #   resources:
+      #     requests:
+      #       cpu: 200m
+      #       memory: 100Mi
+      #     limits:
+      #       cpu: 300m
+      #       memory: 256Mi
+      #   livenessProbe:
+      #     httpGet:
+      #       path: /
+      #       port: 6767
+      #     initialDelaySeconds: 15
+      #     timeoutSeconds: 5
+      #     successThreshold: 1
+      #     failureThreshold: 3
+      #     periodSeconds: 10
+      #   readinessProbe:
+      #     exec:
+      #       command:
+      #         - cat
+      #         - /data/movies/health
+      #     initialDelaySeconds: 15
+      #     timeoutSeconds: 5
+      #     successThreshold: 1
+      #     failureThreshold: 3
+      #     periodSeconds: 40
+        env:      
+        - name: PUID
+          value: "10050"
+        - name: PGID
+          value: "10050"
+        - name: TZ
+          value: America/Chicago
+      #   ports:
+      #   - containerPort:  7878
+      #     name:  http
+      #   volumeMounts:
+      #   - name: pv-shows
+      #     mountPath: /data/shows
+      #   - name: pv-movies
+      #     mountPath: /data/movies
+      #   - name: gfs-appdata
+      #     mountPath: /config
+      # volumes:
+      #   - name: pv-movies
+      #     persistentVolumeClaim:
+      #       claimName: pvc-movies
+      #   - name: pv-shows
+      #     persistentVolumeClaim:
+      #       claimName: pvc-shows
+      #   - name: gfs-appdata
+      #     glusterfs:
+      #       endpoints: gfs-cluster
+      #       path: gv0/appdata/bazarr
+      # restartPolicy: Always
+---
+
+#Service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: papermerge
+  namespace: media-server
+spec:
+  selector:
+    app: papermerge
+  type: LoadBalancer
+  ports:
+  - name: papermerge
+    port: 8000
+    targetPort: 8000
+    protocol: TCP
