@@ -3,9 +3,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hydra2
-  namespace: media-server
   labels:
     app: hydra2
+    service: hydra2
 spec:
   selector:
     matchLabels:
@@ -18,8 +18,6 @@ spec:
     spec:
       containers:
       - name: hydra2
-        #securityContext:
-          #runAsUser: 1001
         image: ghcr.io/linuxserver/nzbhydra2
         imagePullPolicy: IfNotPresent
         resources:
@@ -48,31 +46,4 @@ spec:
         ports:
         - containerPort:  7878
           name:  http
-        volumeMounts:
-        - name: gfs-appdata
-          mountPath: /config
-      volumes:
-        - name: gfs-appdata
-          glusterfs:
-            endpoints: gfs-cluster
-            path: gv0/appdata/hydra2
       restartPolicy: Always
-
----
-
-#Service
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: hydra2
-  namespace: media-server
-spec:
-  selector:
-    app: hydra2
-  type: LoadBalancer
-  ports:
-  - name: hydra2
-    port: 5076
-    targetPort: 5076
-    protocol: TCP

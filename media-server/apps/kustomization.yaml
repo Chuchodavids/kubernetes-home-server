@@ -1,8 +1,8 @@
 resources:
 #- deployment-bazarr.yaml
- - deployment-radarr.yaml
- - deployment-sonarr.yaml
- - deployment-emby.yaml
-#- deployment-ombi.yaml
+ #- deployment-radarr.yaml
+ #- deployment-sonarr.yaml
+ #- deployment-emby.yaml
+ - deployment-ombi.yaml
  - deployment-tautulli.yaml
- - deployment-jellyfin.yaml
+#  - deployment-jellyfin.yaml

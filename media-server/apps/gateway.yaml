@@ -1,7 +1,7 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: httpbin-gateway
+  name: tautulli
 spec:
   selector:
     istio: ingressgateway # use Istio default gateway implementation
@@ -11,18 +11,17 @@ spec:
       name: http
       protocol: HTTP
     hosts:
-    - "*"
+    - "tautulli.torrenegra.page"
 
 ---
 
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: httpbin
-  namespace: test
+  name: tautulli
 spec:
   hosts:
-  - "*"
+  - "tautulli.torrenegra.page"
   gateways:
   - httpbin-gateway
   http:
@@ -32,5 +31,5 @@ spec:
     route:
     - destination:
         port:
-          number: 8083
-        host: nginx
+          number: 8181
+        host: tautulli

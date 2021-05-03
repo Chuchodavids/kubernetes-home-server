@@ -1,0 +1,36 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: gw-tautulli
+spec:
+  selector:
+    istio: ingressgateway # use Istio default gateway implementation
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+
+---
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: vs-tautulli
+  namespace: test
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - gw-tautulli
+  http:
+  - match:
+    - uri:
+        prefix: /tautulli
+    route:
+    - destination:
+        port:
+          number: 8181
+        host: tautulli

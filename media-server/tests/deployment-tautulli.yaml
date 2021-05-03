@@ -1,34 +1,30 @@
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tautulli
-  namespace: media-server
-  labels:
-    app: tautulli
+  namespace: test
 spec:
   selector:
     matchLabels:
       app: tautulli
+      version: v1
   replicas: 1
   template:
     metadata:
       labels:
         app: tautulli
+        version: v1
     spec:
-      serviceAccount: media
       containers:
       - name: tautulli
         image: ghcr.io/linuxserver/tautulli
         imagePullPolicy: IfNotPresent
-        #securityContext:
-          #runAsUser: 1001
         resources:
           requests:
             cpu: 100m
             memory: 250Mi
           limits:
-            cpu: 250m #1000m=1core
+            cpu: 250m
             memory: 500Mi
         livenessProbe:
           httpGet:
@@ -49,43 +45,23 @@ spec:
         ports:
         - containerPort: 8181
           name:  http
-        volumeMounts:
-        - name: appdata
-          mountPath: /config
-      volumes:
-        - name: appdata
-          persistentVolumeClaim:
-            claimName: pvc-tautulli
       restartPolicy: Always
 
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-tautulli
-  namespace: media-server
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: longhorn
-  resources:
-    requests:
-      storage: 2G
----
 #Loadbalancer Service
-
-
 apiVersion: v1
 kind: Service
 metadata:
   name: tautulli
-  namespace: media-server
+  namespace: test
+  labels:
+    app: tautulli
+    service: tautulli
 spec:
   selector:
     app: tautulli
-  type: LoadBalancer
   ports:
-  - name: tautulli
+  - name: http
     port: 8181
     targetPort: 8181
     protocol: TCP

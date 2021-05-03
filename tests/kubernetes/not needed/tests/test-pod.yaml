@@ -2,7 +2,6 @@ kind: Pod
 apiVersion: v1
 metadata:
   name: test-pod
-  namespace: media-server
 spec:
   containers:
   - name: test-pod

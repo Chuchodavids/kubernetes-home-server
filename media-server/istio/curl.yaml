@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  curl
+  namespace: argocd
+  labels:
+    app:  curl
+spec:
+  selector:
+    matchLabels:
+      app: curl
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app:  curl
+    spec:
+      containers:
+      - name:  curl
+        image: radial/busyboxplus:curl
+        command:
+          - sleep
+          - "3600"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+      restartPolicy: Always
