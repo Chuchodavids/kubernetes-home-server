@@ -11,7 +11,7 @@ spec:
       app: curl
   replicas: 1
   template:
-    metadata:
+    metadata:asdfdsafsafsa
       labels:
         app:  curl
     spec:
