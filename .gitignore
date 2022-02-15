@@ -1,1 +1,2 @@
+ansible/kubernetes/.kube/config
 ansible/kubernetes/join-command
