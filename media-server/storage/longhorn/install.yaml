@@ -2,12 +2,12 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: longhorn-system
-tName: longhorn-service-account
 ---
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
   name: longhorn
+  storageclass.kubernetes.io/is-default-class
 provisioner: driver.longhorn.io
 allowVolumeExpansion: true
 parameters:
@@ -15,7 +15,7 @@ parameters:
   numberOfReplicas: "3"
   staleReplicaTimeout: "2880"
   fromBackup: ""
-  diskSelector: "config"
+  diskSelector: "main"
 #  nodeSelector: "storage,fast"
 #  recurringJobs: '[{"name":"snap", "task":"snapshot", "cron":"*/1 * * * *", "retain":1},
 #                   {"name":"backup", "task":"backup", "cron":"*/2 * * * *", "retain":1,

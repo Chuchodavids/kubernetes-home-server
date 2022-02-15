@@ -1,14 +1,12 @@
 [all]
   master
-  node1
-  node2
-  node3
-  node4
+  knode1
+  knode2
+  knode3
 [nodes]
-  node1
-  node2
-  node3
-  node4
+  knode1
+  knode2
+  knode3
 [master]
   master
 

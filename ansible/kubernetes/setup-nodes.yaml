@@ -1,6 +1,6 @@
 - hosts: all
   tasks:
-  # install dependencies
+    # install dependencies
     - name: Install needed packages
       apt:
         name:
@@ -13,49 +13,56 @@
           - software-properties-common
           - ca-certificates
           - lsb-release
-# optional
+          # optional
           - nfs-common # for nfs
           - open-iscsi # for longhorn
           - jq # for longhorn
+        update_cache: yes
+      become: yes
 
-# add google repo
+    # add google repo
 
     - name: add google repo key
       ansible.builtin.apt_key:
-        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg 
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
         state: present
+      become: yes
 
     - name: Add google repository
       ansible.builtin.apt_repository:
         repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
         state: present
+      become: yes
 
-# install kubernetes
+    # install kubernetes
     - name: install kubernetes packages
-      apt: 
-        name: 
-          - kubelet
-          - kubeadm
-          - kubectl
-# hold kube packages
+      apt:
+        name:
+          - kubelet=1.23.3-00
+          - kubeadm=1.23.3-00
+          - kubectl=1.23.3-00
+        update_cache: yes
+      become: yes
 
+    # hold kube packages
     - name: hold kubeadm
       dpkg_selections:
         name: kubeadm
         selection: hold
+      become: yes
 
     - name: hold kubectl
       dpkg_selections:
         name: kubectl
         selection: hold
+      become: yes
 
     - name: hold kubelet
       become: yes
       dpkg_selections:
         name: kubelet
         selection: hold
-
-# Swapp off  
+    # Swapp off
 
     - name: Remove swapfile from /etc/fstab
       mount:
@@ -65,86 +72,93 @@
       with_items:
         - swap
         - none
+      become: yes
 
     - name: Disable swap
       command: swapoff -a
       when: ansible_swaptotal_mb > 0
-
-# Modprobe stuff
+      become: yes
+    # Modprobe stuff
 
     - name: modprobe
       command: "modprobe overlay"
       register: result
-
+      become: yes
     - name: netfilter
       command: "modprobe br_netfilter"
       register: result
-    
-    
+      become: yes
+
     - name: netbridge
       copy:
         content: "net.bridge.bridge-nf-call-ip6tables = 1 \nnet.bridge.bridge-nf-call-iptables = 1 \nnet.ipv4.ip_forward = 1"
         dest: /etc/sysctl.d/kubernetes.conf
+      become: yes
 
-# Docker config
+    # Docker config
     - name: add docker repository key
       ansible.builtin.apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
         state: present
+      become: yes
 
     - name: Add docker repository
       ansible.builtin.apt_repository:
         repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
         state: present
+      become: yes
 
     - name: install docker
       apt:
         name:
-          - containerd.io=1.2.13-2
-          - docker-ce=5:19.03.11~3-0~ubuntu-focal
-          - docker-ce-cli=5:19.03.11~3-0~ubuntu-focal
-
+          - containerd.io #=1.2.13-2
+          - docker-ce #=5:19.03.11~3-0~ubuntu-focal
+          - docker-ce-cli #=5:19.03.11~3-0~ubuntu-focal
+        update_cache: yes
+      become: yes
 
     - name: docker system enable
       command: "mkdir -p /etc/systemd/system/docker.service.d"
       register: result
+      become: yes
+    # cgroups config for docker
 
-# cgroups config for docker
     - name: create script for docker daemon on hosts
       copy: src=docker-daemon.sh dest=/tmp/docker-daemon.sh mode=0777
+      become: yes
 
     - name: executing docker daemon script
       command: sh /tmp/docker-daemon.sh
+      become: yes
 
-# restarts docker
+    # restarts docker
     - name: restart docker
       ansible.builtin.service:
         name: docker
         state: restarted
-
+      become: yes
 
 # Master config and initialization
-
 
 - hosts: master
   tasks:
     - name: Initialize the Kubernetes cluster using kubeadm
       command: kubeadm init --pod-network-cidr=10.10.0.0/16
-
+      become: yes
 
       # change name of home folder to a varialbe. ---to patch
 
-    - name: Setup kubeconfig 
+    - name: Setup kubeconfig
       command: "{{ item }}"
       with_items:
-       - rm -rf /home/chuchodavids/.kube
-       - rm -rf /root/.kube
-       - mkdir /home/chuchodavids/.kube
-       - mkdir /root/.kube
-       - \cp -r /etc/kubernetes/admin.conf /home/chuchodavids/.kube/config
-       - \cp -r /etc/kubernetes/admin.conf /root/.kube/config
-       #- chown $(id -u):$(id -g) $HOME/.kube/config
-    
+        - rm -rf /home/chuchodavids/.kube
+        - rm -rf /root/.kube
+        - mkdir /home/chuchodavids/.kube
+        - mkdir /root/.kube
+        - \cp -r /etc/kubernetes/admin.conf /home/chuchodavids/.kube/config
+        - \cp -r /etc/kubernetes/admin.conf /root/.kube/config
+        #- chown $(id -u):$(id -g) $HOME/.kube/config
+      become: yes
       # change name of home folder to a varialbe. ---to patch
     - name: folder permissions for .kube
       ansible.builtin.file:
@@ -152,21 +166,27 @@
         owner: chuchodavids
         group: chuchodavids
         mode: 777
+      become: yes
 
     - name: Install calico pod network
       command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+      become: yes
 
     - name: Generate join command
       command: kubeadm token create --print-join-command
       register: join_command
+      become: yes
 
     - name: Copy join command to local file
       local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
+      become: yes
 
 - hosts: nodes
   tasks:
     - name: Copy the join command to server location
       copy: src=join-command dest=/tmp/join-command.sh mode=0777
-
+      become: yes
+      
     - name: Join the node to cluster
       command: sh /tmp/join-command.sh
+      become: yes

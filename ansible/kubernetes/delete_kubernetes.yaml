@@ -1,0 +1,10 @@
+- hosts: all
+  tasks:
+    - name: delete kubead
+      ansible.builtin.shell: kubeadm reset --force
+      become: yes
+    - name: Recursively remove directory
+      ansible.builtin.file:
+        path: /etc/cni/net.d
+        state: absent
+      become: yes
