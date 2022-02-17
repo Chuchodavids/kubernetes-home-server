@@ -25,9 +25,8 @@ spec:
   gateways:
   - argocd-gw
   http:
-  - timeout: 5s
-    route:
-    - destination:
-        host: argocd-server.argocd.svc.cluster.local
-        port:
-          number: 80
+    - route:
+      - destination:
+          host: argocd-server.argocd.svc.cluster.local
+          port:
+            number: 80

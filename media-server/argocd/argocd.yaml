@@ -1,12 +1,4 @@
 # This is an auto-generated file. DO NOT EDIT
-# Media Server namespace
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: argocd
-  labels:
-    istio-injection: enabled
----
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -2979,6 +2971,7 @@ metadata:
     app.kubernetes.io/name: argocd-redis
     app.kubernetes.io/part-of: argocd
     app: argocd-redis
+    version: v1
   name: argocd-redis
 spec:
   selector:
@@ -2987,7 +2980,9 @@ spec:
   template:
     metadata:
       labels:
+        app: argocd-redis
         app.kubernetes.io/name: argocd-redis
+        version: v1
     spec:
       affinity:
         podAntiAffinity:
@@ -3028,6 +3023,7 @@ metadata:
     app.kubernetes.io/name: argocd-repo-server
     app.kubernetes.io/part-of: argocd
     app: argocd-repo-server
+    version: v1
   name: argocd-repo-server
 spec:
   selector:
@@ -3036,6 +3032,8 @@ spec:
   template:
     metadata:
       labels:
+        app: argocd-repo-server
+        version: v1
         app.kubernetes.io/name: argocd-repo-server
     spec:
       affinity:
@@ -3237,10 +3235,12 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: argocd-server
+      app: argocd-server
   template:
     metadata:
       labels:
+        app: argocd-server
+        version: v1
         app.kubernetes.io/name: argocd-server
     spec:
       affinity:
@@ -3261,6 +3261,7 @@ spec:
       containers:
       - command:
         - argocd-server
+        - --insecure
         env:
         - name: ARGOCD_SERVER_INSECURE
           valueFrom:
@@ -3475,6 +3476,8 @@ metadata:
     app.kubernetes.io/component: application-controller
     app.kubernetes.io/name: argocd-application-controller
     app.kubernetes.io/part-of: argocd
+    app: argocd-application-controller
+    version: v1
   name: argocd-application-controller
 spec:
   replicas: 1
@@ -3485,6 +3488,8 @@ spec:
   template:
     metadata:
       labels:
+        app: argocd-application-controller
+        version: v1
         app.kubernetes.io/name: argocd-application-controller
     spec:
       affinity:
