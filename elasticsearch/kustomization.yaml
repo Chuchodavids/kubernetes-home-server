@@ -1,4 +1,5 @@
 resources:
+  # - ns.yaml
   - elasticsearch-ss.yaml
   - logstash.yaml
   - metricbeat.yaml

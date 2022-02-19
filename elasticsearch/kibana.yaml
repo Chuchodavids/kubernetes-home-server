@@ -2,11 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kibana-logging
-  namespace: kube-system
+  namespace: elk
   labels:
     k8s-app: kibana-logging
-    kubernetes.io/cluster-service: "true"
-    addonmanager.kubernetes.io/mode: Reconcile
 spec:
   replicas: 1
   selector:
@@ -16,8 +14,6 @@ spec:
     metadata:
       labels:
         k8s-app: kibana-logging
-      annotations:
-        seccomp.security.alpha.kubernetes.io/pod: 'docker/default'
     spec:
       containers:
       - name: kibana-logging
@@ -40,35 +36,18 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kibana-logging
-  namespace: kube-system
+  namespace: elk
   labels:
     k8s-app: kibana-logging
     kubernetes.io/cluster-service: "true"
     addonmanager.kubernetes.io/mode: Reconcile
     kubernetes.io/name: "Kibana"
 spec:
+  type: NodePort
   ports:
   - port: 5601
     protocol: TCP
     targetPort: ui
+    nodePort: 32010
   selector:
     k8s-app: kibana-logging
-#  ---
-# apiVersion: extensions/v1beta1
-# kind: Ingress
-# metadata:
-#   name: logs-ingress
-#   namespace: kube-system
-#   labels:
-#     app: logs
-#   annotations:
-#     kubernetes.io/ingress.class: traefik
-# spec:
-#   rules:
-#   - host: logs.example.com
-#     http:
-#       paths:
-#       - path: /
-#         backend:
-#           serviceName: kibana-logging
-#           servicePort: 5601
