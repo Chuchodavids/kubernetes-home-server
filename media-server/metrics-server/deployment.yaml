@@ -30,10 +30,9 @@ spec:
         imagePullPolicy: IfNotPresent
         command:
           - /metrics-server
-          - --kubelet-preferred-address-types=InternalIP
-        args:
-          - --kubelet-insecure-tls
           - --cert-dir=/tmp
+          - --kubelet-preferred-address-types=InternalIP
+          - --kubelet-insecure-tls
           - --secure-port=4443
           - --kubelet-use-node-status-port
           - --metric-resolution=15s
@@ -41,6 +40,9 @@ spec:
           requests:
             cpu: 100m
             memory: 200Mi
+          limits:
+            cpu: 500m
+            memory: 500Mi
         ports:
         - name: https
           containerPort: 4443
