@@ -1,6 +1,6 @@
 namespace: istio-system
 resources:
-  - generated-manifest.yaml
   - ns.yaml
+  - istio.yaml
   - addons/jaeger.yaml
   - addons/prometheus.yaml
