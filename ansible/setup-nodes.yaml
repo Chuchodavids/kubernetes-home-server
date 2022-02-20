@@ -38,9 +38,9 @@
     - name: install kubernetes packages
       apt:
         name:
-          - kubelet=1.23.3-00
-          - kubeadm=1.23.3-00
-          - kubectl=1.23.3-00
+          - kubelet=1.21.9-00
+          - kubeadm=1.21.9-00
+          - kubectl=1.21.9-00
         update_cache: yes
       become: yes
 
@@ -48,20 +48,20 @@
     - name: hold kubeadm
       dpkg_selections:
         name: kubeadm
-        selection: hold
+        selection: install
       become: yes
 
     - name: hold kubectl
       dpkg_selections:
         name: kubectl
-        selection: hold
+        selection: install
       become: yes
 
     - name: hold kubelet
       become: yes
       dpkg_selections:
         name: kubelet
-        selection: hold
+        selection: install
     # Swapp off
 
     - name: Remove swapfile from /etc/fstab
@@ -190,3 +190,13 @@
     - name: Join the node to cluster
       command: sh /tmp/join-command.sh
       become: yes
+
+- name: local shit
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: copy local shit
+      command: scp chuchodavids@master:/home/chuchodavids/.kube/config ~/.kube/config
+      become: yes
+
+
