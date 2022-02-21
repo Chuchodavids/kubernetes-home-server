@@ -1,2 +1,5 @@
 resources:
 - install.yaml
+- longhorn-ui.yaml
+- longhorn-istio.yaml
+# - longhorn-ui-with-sidecar.yaml

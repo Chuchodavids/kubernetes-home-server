@@ -1,0 +1,23 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: istio-gw
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http-argocd
+      protocol: HTTP
+    hosts:
+      - www.argocd.chuchodavids.io
+      - argocd.chuchodavids.io
+  - port:
+      number: 80
+      name: http-longhorn
+      protocol: HTTP
+    hosts:
+      - www.longhorn.chuchodavids.io
+      - longhorn.chuchodavids.io
