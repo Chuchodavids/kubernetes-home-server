@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  discord-bot
+  namespace: discordbot
+  labels:
+    app:  discord-bot
+spec:
+  selector:
+    matchLabels:
+      app: discord-bot
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  discord-bot
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+      - name:  discord-bot
+        image:  chuchodavids/chuchobot
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 200m
+            memory: 200Mi
+        env:
+          - name: ROLE_GOLD
+            valueFrom:
+              configMapKeyRef:
+                  name: discordbot-cm
+                  key: ROLE_GOLD
+          - name: ROLE_ID
+            valueFrom:
+              configMapKeyRef:
+                  name: discordbot-cm
+                  key: ROLE_GOLD
+          - name: TZ
+            valueFrom:
+              configMapKeyRef:
+                  name: discordbot-cm
+                  key: TZ
+          - name: TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: discord-token
+                key: TOKEN
+        ports:
+        - containerPort:  80
+          name:  discord-bot
+        volumeMounts:
+        - name: discordbot
+          mountPath: /home/discord/config
+      volumes:
+        - name: discordbot
+          persistentVolumeClaim:
+            claimName: discordbot-pvc
+      restartPolicy: Always
+---
+
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: discordbot-cm
+  namespace: discordbot
+data:
+  ROLE_ID: "898445266091380756"
+  ROLE_GOLD: "748734274156363836"
+  GUILD_ID: "714189960365998150"
+  TZ: "America/Chicago"
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: discord-token
+  namespace: discordbot
+type: Opaque
+data:
+  TOKEN: T0RrNE56QXpOelV3TnpJNE9USTFNakUwLllXb0ZGdy5iRXR4cGF3MlBlWmRUcU5KVDVEa0owTlR3b0UK
+
+---
+apiVersion: v1
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iOnsidXNlcm5hbWUiOiJjaHVjaG9kYXZpZHMiLCJwYXNzd29yZCI6IkNodWNob2RhdmlkczEuLiIsImVtYWlsIjoiY2h1Y2hvZGF2aWRzQGhvdG1haWwuY29tIiwiYXV0aCI6IlkyaDFZMmh2WkdGMmFXUnpPa05vZFdOb2IyUmhkbWxrY3pFdUxnPT0ifX19
+kind: Secret
+metadata:
+  creationTimestamp: "2022-02-21T02:43:36Z"
+  name: regcred
+  namespace: discordbot
+type: kubernetes.io/dockerconfigjson
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: discordbot-pvc
+  namespace: discordbot
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 1Gi
