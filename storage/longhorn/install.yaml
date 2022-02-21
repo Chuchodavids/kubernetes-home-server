@@ -950,20 +950,19 @@ data:
       name: longhorn
     provisioner: driver.longhorn.io
     allowVolumeExpansion: true
-    reclaimPolicy: Delete
+    reclaimPolicy: Retain
     volumeBindingMode: Immediate
     parameters:
       fsType: "ext4"
       numberOfReplicas: "3"
       staleReplicaTimeout: "2880"
       fromBackup: ""
-      diskSelector: "fast,ssd,main"
+      diskSelector: "main"
+    #  nodeSelector: "storage,fast"
     #  backingImage: "bi-test"
     #  backingImageDataSourceType: "download"
     #  backingImageDataSourceParameters: '{"url": "https://backing-image-example.s3-region.amazonaws.com/test-backing-image"}'
     #  backingImageChecksum: "SHA512 checksum of the backing image"
-    #  diskSelector: "ssd,fast"
-    #  nodeSelector: "storage,fast"
     #  recurringJobSelector: '[{"name":"snap-group", "isGroup":true},
     #                          {"name":"backup", "isGroup":false}]'
 ---

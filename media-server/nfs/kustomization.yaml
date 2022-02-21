@@ -1,2 +1,3 @@
 resources:
-- nfs-storage-config.yaml
+# - nfs-storage-config.yaml
+  - plex-bot.yaml
