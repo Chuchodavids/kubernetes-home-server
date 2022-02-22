@@ -4,4 +4,6 @@ resources:
   - istio.yaml
   - gw.yaml
   - addons/prometheus.yaml
-  - addons/kiali.yaml
+  # - addons/kiali.yaml
+  - addons/grafana.yaml
+  - addons/jaeger.yaml
