@@ -1,0 +1,4 @@
+resources:
+  - ca-issuer.yaml
+  - cert-manager.yaml
+  - certificate.yaml

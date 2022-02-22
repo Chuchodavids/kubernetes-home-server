@@ -3,6 +3,5 @@ resources:
   - ns.yaml
   - istio.yaml
   - gw.yaml
-  # - addons/jaeger.yaml
   - addons/prometheus.yaml
   - addons/kiali.yaml

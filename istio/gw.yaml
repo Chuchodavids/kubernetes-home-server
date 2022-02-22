@@ -8,12 +8,15 @@ spec:
     istio: ingressgateway
   servers:
   - port:
-      number: 80
-      name: http-argocd
-      protocol: HTTP
+      number: 443
+      name: https-argocd
+      protocol: HTTPS
     hosts:
       - www.argocd.chuchodavids.io
       - argocd.chuchodavids.io
+    tls:
+      mode: SIMPLE
+      credentialName: chuchodavids-io-cert
   - port:
       number: 80
       name: http-longhorn
