@@ -7,8 +7,7 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/Chuchodavids/m0n3t.git
-    targetRevision: HEAD
+    repoURL: git@github.com:Chuchodavids/kubernetes-home-server.git
     path: bookinfo
   destination:
     server: https://kubernetes.default.svc
