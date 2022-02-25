@@ -1,0 +1,7 @@
+namespace: bookinfo
+resources:
+  - ns.yaml
+  - book.yaml
+
+patches:
+  - book-patch.yaml

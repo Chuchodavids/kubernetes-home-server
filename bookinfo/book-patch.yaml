@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: details-v1
+spec:
+  template:
+    spec:
+      containers:
+      - name: details
+        resources:
+          requests:
+            cpu: "0.2"
+            memory: "100Mi"
+          limits:
+            cpu: "0.5"
+            memory: "200Mi"
+---
+##################################################################################################
+# Ratings service
+##################################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ratings-v1
+spec:
+  template:
+    spec:
+      containers:
+      - name: ratings
+        resources:
+          requests:
+            cpu: "0.2"
+            memory: "100Mi"
+          limits:
+            cpu: "0.5"
+            memory: "200Mi"
+---
+##################################################################################################
+# Reviews service
+##################################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reviews-v1
+spec:
+  template:
+    spec:
+      containers:
+      - name: reviews
+        image: docker.io/istio/examples-bookinfo-reviews-v1:1.16.2
+        resources:
+          requests:
+            cpu: "0.2"
+            memory: "100Mi"
+          limits:
+            cpu: "0.5"
+            memory: "200Mi"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reviews-v2
+spec:
+  template:
+    spec:
+      containers:
+      - name: reviews
+        resources:
+          requests:
+            cpu: "0.2"
+            memory: "100Mi"
+          limits:
+            cpu: "0.5"
+            memory: "200Mi"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reviews-v3
+spec:
+  template:
+    spec:
+      containers:
+      - name: reviews
+        resources:
+          requests:
+            cpu: "0.2"
+            memory: "100Mi"
+          limits:
+            cpu: "0.5"
+            memory: "200Mi"
+---
+##################################################################################################
+# Productpage services
+##################################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: productpage-v1
+spec:
+  template:
+    spec:
+      containers:
+      - name: productpage
+        resources:
+          requests:
+            cpu: "0.2"
+            memory: "100Mi"
+          limits:
+            cpu: "0.5"
+            memory: "200Mi"
+---
