@@ -10,7 +10,7 @@ spec:
     path: istio
   destination:
     server: https://kubernetes.default.svc
-    namespace: istio
+    namespace: istio-system
   syncPolicy:
     automated:
       prune: true
@@ -27,3 +27,12 @@ spec:
         duration: 5s
         factor: 2
         maxDuration: 3m
+  ignoreDifferences:
+    - group: admissionregistration.k8s.io/v1beta1
+      kind: MutatingWebhookConfiguration
+      jsonPointers:
+        - /metadata/webhooks/0/clientConfig/
+    - group: admissionregistration.k8s.io/v1beta1
+      kind: ValidatingWebhookConfiguration
+      jsonPointers:
+        - /metadata/webhooks/0/clientConfig/
