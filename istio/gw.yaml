@@ -17,6 +17,12 @@ spec:
     #   httpsRedirect: true
   - port:
       number: 80
+      name: http-bookinfo
+      protocol: HTTP
+    hosts:
+      - "test.chuchodavids.io"
+  - port:
+      number: 80
       name: http-longhorn
       protocol: HTTP
     hosts:
