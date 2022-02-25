@@ -13,8 +13,14 @@ spec:
       protocol: HTTP
     hosts:
       - "argocd.chuchodavids.io"
-    tls:
-      httpsRedirect: true
+    # tls:
+    #   httpsRedirect: true
+  - port:
+      number: 80
+      name: http-longhorn
+      protocol: HTTP
+    hosts:
+      - "longhorn.chuchodavids.io"
   - port:
       number: 443
       name: https-argocd
@@ -24,9 +30,3 @@ spec:
     tls:
       mode: SIMPLE
       credentialName: chuchodavids-io-cert
-  - port:
-      number: 80
-      name: http-longhorn
-      protocol: HTTP
-    hosts:
-      - "longhorn.chuchodavids.io"

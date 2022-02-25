@@ -5,7 +5,7 @@ metadata:
   namespace: argocd
 spec:
   hosts:
-  - "*"
+  - "argocd.chuchodavids.io"
   gateways:
   - istio-system/istio-gw
   http:
