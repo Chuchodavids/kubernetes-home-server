@@ -1,16 +1,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: bookinfo
+  name: istio
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: git@github.com:Chuchodavids/kubernetes-home-server.git
-    path: bookinfo
+    path: istio
   destination:
     server: https://kubernetes.default.svc
-    namespace: bookinfo
+    namespace: istio
   syncPolicy:
     automated:
       prune: true

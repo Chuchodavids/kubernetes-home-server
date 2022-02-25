@@ -1,0 +1,4 @@
+resources:
+  - bookinfo.yaml
+  - istio.yaml
+  - cert-manager.yaml

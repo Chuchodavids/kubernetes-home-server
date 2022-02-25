@@ -3,3 +3,5 @@ resources:
   - ns.yaml
   - argocd.yaml
   - argo-istio.yaml
+components:
+  - managed-apps/
