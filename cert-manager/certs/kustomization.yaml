@@ -1,5 +1,5 @@
 resources:
-  - bookinfo-cert.yaml
+  # - bookinfo-cert.yaml
   - chuchodavids-io.yaml
-  - argocd-cert.yaml
-  - longhorn-cert.yaml
+  # - argocd-cert.yaml
+  # - longhorn-cert.yaml
