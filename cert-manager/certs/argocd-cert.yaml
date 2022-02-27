@@ -1,11 +1,11 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: chuchodavids-io
+  name: argocd.io
   namespace: istio-system
 spec:
   # Secret names are always required.
-  secretName: chuchodavids-io-cert
+  secretName: argocd-io-cert
   duration: 2160h # 90d
   renewBefore: 360h # 15d
   subject:
@@ -21,10 +21,7 @@ spec:
     - client auth
   # At least one of a DNS Name, URI, or IP address is required.
   dnsNames:
-    - chuchodavids.io
-    - www.chuchodavids.io
-    - 192.168.200.51
-    - "*.chuchodavids.io"
+    - argocd.io
   uris:
     - spiffe://cluster.local/ns/sandbox/sa/example
   ipAddresses:

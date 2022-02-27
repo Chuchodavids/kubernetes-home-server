@@ -7,32 +7,21 @@ spec:
   selector:
     istio: ingressgateway
   servers:
-  - port:
-      number: 80
-      name: http-argocd
-      protocol: HTTP
-    hosts:
-      - "argocd.chuchodavids.io"
-    # tls:
-    #   httpsRedirect: true
+# BOOKINFO
   - port:
       number: 80
       name: http-bookinfo
       protocol: HTTP
     hosts:
-      - "test.chuchodavids.io"
-  - port:
-      number: 80
-      name: http-longhorn
-      protocol: HTTP
-    hosts:
-      - "longhorn.chuchodavids.io"
+      - "bookinfo/test.chuchodavids.io"
+    tls:
+      httpsredirect: true
   - port:
       number: 443
-      name: https-argocd
+      name: https-bookinfo
       protocol: HTTPS
     hosts:
-      - argocd.chuchodavids.io
+      - "bookinfo/test.chuchodavids.io"
     tls:
       mode: SIMPLE
       credentialName: chuchodavids-io-cert

@@ -4,7 +4,7 @@ metadata:
   name: bookinfo
 spec:
   hosts:
-  - "*"
+  - "test.chuchodavids.io"
   gateways:
   - istio-system/istio-gw
   http:
@@ -23,4 +23,4 @@ spec:
     - destination:
         host: productpage
         port:
-          number: 9080
+            number: 9080

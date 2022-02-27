@@ -1,5 +1,4 @@
-namespace: argocd
 resources:
-  - ns.yaml
-  - argocd.yaml
-  - argo-istio.yaml
+  - base
+patches:
+  - patches/resources.yaml
