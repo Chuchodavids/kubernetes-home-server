@@ -3,6 +3,3 @@ resources:
   - ns.yaml
   - book.yaml
   - vs.yaml
-
-patches:
-  - book-patch.yaml
