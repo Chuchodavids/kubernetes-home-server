@@ -14,8 +14,8 @@ spec:
       protocol: HTTP
     hosts:
       - "bookinfo/test.chuchodavids.io"
-    tls:
-      httpsredirect: true
+    # tls:
+    #   httpsredirect: true
   - port:
       number: 443
       name: https-bookinfo
@@ -25,3 +25,9 @@ spec:
     tls:
       mode: SIMPLE
       credentialName: chuchodavids-io-cert
+  - port:
+      number: 80
+      name: http-argocd
+      protocol: HTTP
+    hosts:
+      - "*"
