@@ -5,15 +5,13 @@ metadata:
   namespace: argocd
 spec:
   hosts:
-  - "*"
+  - "argocd.chuchodavids.io"
   gateways:
   - istio-system/istio-gw
   http:
   - match:
     - uri:
-        exact: "/argocd"
-    rewrite:
-        uri: /
+        regex: "argocd.*"
     route:
     - destination:
         host: argocd-server.argocd.svc.cluster.local

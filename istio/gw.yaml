@@ -14,8 +14,8 @@ spec:
       protocol: HTTP
     hosts:
       - "bookinfo/test.chuchodavids.io"
-    # tls:
-    #   httpsredirect: true
+    tls:
+      httpsredirect: true
   - port:
       number: 443
       name: https-bookinfo

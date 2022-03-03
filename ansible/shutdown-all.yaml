@@ -1,4 +1,5 @@
-- hosts: all
+- hosts: nodes
   tasks:
     - name: shutdown
       ansible.builtin.shell: shutdown now
+      become: true
